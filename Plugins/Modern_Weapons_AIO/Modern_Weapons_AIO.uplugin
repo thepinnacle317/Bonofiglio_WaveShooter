@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.3",
+	"FriendlyName": "Modern Weapons AIO",
+	"Description": "Modern Weapons All-In-One Sound System",
+	"Category": "SoundFX.Studio",
+	"CreatedBy": "soundFX.Studio",
+	"CreatedByURL": "https://soundfx.studio/",
+	"DocsURL": "com.epicgames.launcher://ue/marketplace/product/41a69b16cc0541d9be9b3b9167e9f5e1",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/41a69b16cc0541d9be9b3b9167e9f5e1",
+	"SupportURL": "https://soundfx.studio/",
+	"EngineVersion": "5.4.0",
+	"CanContainContent": true,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "Modern_Weapons_AIO",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		}
+	]
+}
