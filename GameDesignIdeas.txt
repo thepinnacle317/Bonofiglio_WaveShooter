@@ -1,0 +1,115 @@
+Developed by: Nicholas Bonofiglio
+GPE340- Programming for Game Engines
+
+Engine Used: UE 5.4.4
+Source Code: UProject
+Compiler: Rider 2024.1
+
+Date: Fall 2024 
+
+*** Code Comments ***
+/// * * <Some Text> * * /// = Header Comment for the section.
+/* <Some Text> */ = Comment for variable or method.
+// <Some Text> = Sub Comment for a method.
+
+*** Naming Conventions ***
+- All variable names and functions will abide by Unreal Engine C++ coding standards.
+
+Blueprint naming conventions will be as follows: *Updated as the need arises :|
+Blueprint = BP_<Name>
+Animation Blueprint = ABP_<Name>
+Widget Blueprint = WBP_<Name>
+Struct = S_<Name>
+Enum = Enum_<Name>
+Textures = T_<Name>
+Material = M_<Name>
+Material Instances = MI_<Name>
+Animation Montages = AM_<Name>
+Sequences = <Name>
+Icon Textures Final = Icon_<Name>
+Input Actions = IA_<Name>
+Input Mapping Contexts = IMC_<Name>
+
+*** Weapon Component ***
+- Used to store a reference to who is holding it
+- Holds functions for firing, reloading, and data for attributes
+- Will use a Data Table and Data Assets(Scriptable Objects) for defining the weapon properties.
+
+*** Character Component ***
+- Holds a reference to the currently held actor
+- Will hold all the animations for properties
+- Add a bool that will trigger with the drop and equip methods.  This will be used to go from the unarmed to armed states of animation.
+
+*** Character Attributes ***
+- This component will only hold values and methods that do not require casting to reference the games specific character.  
+
+*** Game Settings ***
+*Graphics
+- Engine Scalability
+- AA type
+- Shadows
+- Lighting
+
+*Sound
+- Master
+- Music
+- UI
+- SFX
+
+*Gameplay
+- Input Sensitivity (ADS and Not)
+- Difficulty
+- Base FOV slider
+- ...
+
+*** Main Menu UI ***
+Play
+Load		TIP: Don't forget to set your game settings before Play (Cycle through tips)
+Settings
+Quit		Credits
+
+- Dynamic scene with Wraith posing in front of a lunar rover.
+
+*** Character Customization ***
+Set Mesh ... 3-4 options for choosing
+Color sliders for dynamic material instances
+
+*** Level Manager ***
+Choose level. Currently only 1 level
+Loading screen
+Dynamic camera movement to the player start.  Macro to micro view onto the base.
+Spawn player and play spawn animation rising up.
+Give control to the player on finish.
+
+
+*** Level Objectives ***
+-Base Idea: Solve a few different puzzles to get the base up and running while you fend off a relentless attack of enemies
+(Basically CoD Zombies old school style but fighting robots that shoot back and are a lot more dynamic)
+
+*** Development Phases ***
+Phases
+
+Phase 1: Prototyping
+A. Establish a working base prototype and extends and establish a loosely couple code base that will allow for the addition of features and gameplay by
+a working designer.
+B. Build out components that will be attached to a base class that will allow for modular designing of actors/pawns.
+C. Ensure all skeletal meshes adhere to Y-forward if they are going to be attached to the character.  (Design Decision).
+
+Phase 2: Refactoring
+A. Refactor the code base and apply any amplifying or clarifying comments where necessary.
+
+Phase 3: Gameplay
+A. Design and mockup a level that will be used for testing different navigation.
+B. Camera collision testing - Use the scenarios for testing collision to develop a plan for scale and close proximity.
+* Should the camera boom shorten when colliding or should we snap it to a socket and interpolate the location quickly/smoothing for more 
+consistent behavior.
+C. Collision testing for all assets to be used and ensure they have the proper form and response to the correct channels.
+D. AI Navigation - Test the nav mesh and look for gaps and adjust the parameters in the project settings.  
+* Will be dynamic (*Performance loss, but needed)
+
+Phase 4: Gameplay Loop Testing
+A. Test the mechanics individually and more thoroughly.  Log any bugs individually with how they can be replicated and what it is.
+* If it is game breaking, fix the bug and then continue on the process.
+B. Test the loop as a whole and see if there are any major balancing issues.
+C. Ensure that their are adequate settings for the player to adjust per the experience desired. (Easy, Normal, Hard)
+D. End of testing develop an intro sequence and main menu map.
