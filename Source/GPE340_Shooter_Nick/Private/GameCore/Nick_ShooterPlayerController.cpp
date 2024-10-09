@@ -170,7 +170,6 @@ FName ANick_ShooterPlayerController::GetDirectionalDodgeSection()
 	return MontageSection;
 }
 
-
 void ANick_ShooterPlayerController::Firing()
 {
 	PossessedCharacter->GetShooterComp()->FirePressed();

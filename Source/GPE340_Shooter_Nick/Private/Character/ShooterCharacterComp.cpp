@@ -56,7 +56,6 @@ void UShooterCharacterComp::BeginPlay()
 
 	/* Spawn & Equip the weapon for the character at the start of play */
 	EquipWeapon(SpawnDefaultWeapon());
-	
 }
 
 void UShooterCharacterComp::CrosshairTrace()

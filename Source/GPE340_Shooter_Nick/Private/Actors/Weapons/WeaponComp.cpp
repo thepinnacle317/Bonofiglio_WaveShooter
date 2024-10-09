@@ -265,6 +265,8 @@ void UWeaponComp::ReloadAmmoInMagazine(int32 Amount)
 
 void UWeaponComp::FinishedReloading()
 {
+	TObjectPtr<UInventoryComponent> InventoryComponent = OwningShooterCharacter->GetInventoryComp();
+	
 	/* Reset the Character State, this allows us to perform other actions once we have completed reloading */
 	OwningShooterCharacter->GetShooterComp()->CharacterState = ECharacterState::ECS_Unoccupied;
 
@@ -280,14 +282,14 @@ void UWeaponComp::FinishedReloading()
 			ReloadAmmoInMagazine(HeldAmmo);
 			HeldAmmo = 0;
 			// Update the ammo map with a new key value pair
-			OwningShooterCharacter->GetInventoryComp()->AmmoMap.Add(AmmoType, HeldAmmo);
+			InventoryComponent->AmmoMap.Add(AmmoType, HeldAmmo);
 		}
 		else
 		{
 			// Fill the magazine
 			ReloadAmmoInMagazine(RoomInMagazine);
 			HeldAmmo -= RoomInMagazine;
-			OwningShooterCharacter->GetInventoryComp()->AmmoMap.Add(AmmoType, HeldAmmo);
+			InventoryComponent->AmmoMap.Add(AmmoType, HeldAmmo);
 		}
 	}
 }
