@@ -73,6 +73,19 @@
 			"Name": "Thumbnailer",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/e6cff6f9f12f4fb699af2012fab767ee"
+		},
+		{
+			"Name": "GaeaUnrealTools",
+			"Enabled": true
+		},
+		{
+			"Name": "ReliefMapping",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/47cefc1203a142c7bb5027c194bee325"
+		},
+		{
+			"Name": "NaniteDisplacedMesh",
+			"Enabled": true
 		}
 	]
 }
