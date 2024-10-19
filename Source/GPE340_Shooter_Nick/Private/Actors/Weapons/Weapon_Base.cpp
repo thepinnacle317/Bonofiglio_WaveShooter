@@ -6,9 +6,14 @@
 
 AWeapon_Base::AWeapon_Base()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	
 	WeaponComponent = CreateDefaultSubobject<UWeaponComp>(TEXT("Weapon Component"));
+}
+
+void AWeapon_Base::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
 void AWeapon_Base::BeginPlay()

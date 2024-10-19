@@ -12,7 +12,10 @@ UInventoryComponent::UInventoryComponent() :
 /* Member Initializer List */
 DefaultPistolAmmo(60),
 DefaultRifleAmmo(180),
-DefaultSpecialAmmo(6)
+DefaultSpecialAmmo(6),
+// Camera Interpolation of Item
+CameraInterpForaward(250.f),
+CameraInterpUp(65.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -60,4 +63,11 @@ bool UInventoryComponent::HasAmmoType()
 	return false;
 }
 
-
+void UInventoryComponent::GetPickupItem(AItem_Base* PickupItem)
+{
+	auto Weapon = Cast<AWeapon_Base>(PickupItem);
+	if (Weapon)
+	{
+		OwningCharacter->GetShooterComp()->SwapWeapon(Weapon);
+	}
+}

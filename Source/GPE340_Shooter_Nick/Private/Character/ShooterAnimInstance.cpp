@@ -19,11 +19,15 @@ Pitch(0.f),
 Roll(0.f),
 ShooterMovementOffsetYaw(0.f),
 LastFrameOffsetYaw(0.f),
-CharacterYaw(0.f),
-LastFrameCharacterYaw(0.f),
+TIPYaw(0.f),
+LastFrameTIPYaw(0.f),
 RootYawOffset(0.f),
 AimPitch(0.f),
-bReloading(false)
+bReloading(false),
+AOStates(EAOStates::EAO_AtReady),
+CharacterRotation(FRotator(0.f)),
+LastFrameCharacterRotation(FRotator(0.f)),
+YawDelta(0.f)
 {
 }
 
@@ -79,9 +83,30 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bAiming = ShooterCharacter->GetShooterComp()->GetbIsAiming();
 
+		if (bReloading)
+		{
+			AOStates = EAO_Reloading;
+		}
+		else if (bIsInAir)
+		{
+			AOStates = EAO_IsInAir;
+		}
+		else if (ShooterCharacter->GetShooterComp()->GetbIsAiming())
+		{
+			AOStates = EAO_Aiming;
+		}
+		else
+		{
+			{
+				AOStates = EAO_AtReady;
+			}
+		}
+
 	}
 	/* Update the variables need to execute Turn In Place */
 	TurnInPlace();
+	
+	Lean(DeltaTime);
 }
 
 void UShooterAnimInstance::NativeInitializeAnimation()
@@ -96,23 +121,23 @@ void UShooterAnimInstance::TurnInPlace()
 	
 	AimPitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 	
-	if (Speed > 0)
+	if (Speed > 0 || bIsInAir)
 	{
 		/* No Turning in Place. Reset the values */
 		RootYawOffset = 0.f;
-		CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
-		LastFrameCharacterYaw = CharacterYaw;
+		TIPYaw = ShooterCharacter->GetActorRotation().Yaw;
+		LastFrameTIPYaw = TIPYaw;
 		RotationCurveValue = 0.f;
 		LastFrameRotationCurveValue = 0.f;
 	}
 	else
 	{
-		LastFrameCharacterYaw = CharacterYaw;
-		CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
-		const float YawDelta{ CharacterYaw - LastFrameCharacterYaw };
+		LastFrameTIPYaw = TIPYaw;
+		TIPYaw = ShooterCharacter->GetActorRotation().Yaw;
+		const float TIPYawDelta{ TIPYaw - LastFrameTIPYaw };
 
 		/* Clamped and updated RootYawOffset -180 +180  *** See Comment for function */
-		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
+		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
 
 		/* Within the anim instance we can access a curve value on an animation through the function with the
 		 * TEXT Macro to specify the curve that we want to retrieve the value from */
@@ -151,4 +176,24 @@ void UShooterAnimInstance::TurnInPlace()
 		}
 		*/
 	}
+}
+
+void UShooterAnimInstance::Lean(float DeltaTime)
+{
+	if (ShooterCharacter == nullptr) return;
+
+	LastFrameCharacterRotation = CharacterRotation;
+	CharacterRotation = ShooterCharacter->GetActorRotation();
+
+	const FRotator Delta{ UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, LastFrameCharacterRotation)};
+	
+
+	/* Determines how much the character is turning to decide the lean value */
+	const float Target{ static_cast<float>(Delta.Yaw / DeltaTime) };
+
+	/* Interpolate YawDelta to the target rotation over time */
+	const float Interp{ FMath::FInterpTo(YawDelta, Target, DeltaTime, 6.f)};
+
+	/* Clamp how much the character can lean */
+	 YawDelta = FMath::Clamp(Interp, -90.f, 90.f);
 }

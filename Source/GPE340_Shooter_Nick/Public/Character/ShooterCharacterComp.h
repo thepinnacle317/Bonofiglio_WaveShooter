@@ -138,6 +138,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Shooter Core | Combat Properties | States")
 	ECharacterState CharacterState;
 
+
+
 protected:
 	virtual void BeginPlay() override;
 	

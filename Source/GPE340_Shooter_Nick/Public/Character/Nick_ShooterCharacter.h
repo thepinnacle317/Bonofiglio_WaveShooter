@@ -32,6 +32,8 @@ public:
 	FFireDelegate OnFiredWeapon;
 	FAimDelegate OnAiming;
 
+	FVector GetTargetInterpLocation();
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -66,6 +68,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ANick_ShooterPlayerController> OwningController;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interpolation", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USceneComponent> ItemInterpTargetComp;
 	
 
 public:
@@ -87,5 +92,8 @@ public:
 
 	/* Returns the owning shooter player controller */
 	FORCEINLINE TObjectPtr<ANick_ShooterPlayerController> GetShooterController() const { return OwningController; }
+
+	/* Returns the Component used to interpolate items to */
+	FORCEINLINE TObjectPtr<USceneComponent> GetItemInterpTargetComp() const { return ItemInterpTargetComp; }
 
 };

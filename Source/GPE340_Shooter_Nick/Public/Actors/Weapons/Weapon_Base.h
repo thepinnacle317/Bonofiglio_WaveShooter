@@ -22,6 +22,8 @@ class GPE340_SHOOTER_NICK_API AWeapon_Base : public AItem_Base
 public:
 	AWeapon_Base();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	/* Weapon Component holds all the core logic for the weapon */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon Core")
 	TObjectPtr<UWeaponComp> WeaponComponent;

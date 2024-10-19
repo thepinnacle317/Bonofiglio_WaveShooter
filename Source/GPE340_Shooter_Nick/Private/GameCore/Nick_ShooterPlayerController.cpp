@@ -204,10 +204,13 @@ void ANick_ShooterPlayerController::AimCompleted()
 
 void ANick_ShooterPlayerController::Interact()
 {
-	if (PossessedCharacter->GetInteractComp()->HitItem)
+	if (PossessedCharacter && PossessedCharacter->GetInventoryComp() && PossessedCharacter->GetInteractComp()->HitItem)
 	{
+		PossessedCharacter->GetInteractComp()->HitItem->StartItemCurve(PossessedCharacter);
+
+		/*  ** Used to test the swap weapon logic **
 		auto HitWeapon = Cast<AWeapon_Base>(PossessedCharacter->GetInteractComp()->HitItem);
-		PossessedCharacter->GetShooterComp()->SwapWeapon(HitWeapon);
+		PossessedCharacter->GetShooterComp()->SwapWeapon(HitWeapon); */
 	}
 }
 

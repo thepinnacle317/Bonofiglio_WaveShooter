@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Item_Base.generated.h"
 
+class ANick_ShooterCharacter;
 /* Forward Declarations */
 class UWidgetComponent;
 class UBoxComponent;
@@ -44,6 +45,14 @@ class GPE340_SHOOTER_NICK_API AItem_Base : public AActor
 public:
 	AItem_Base();
 
+	/* Called from the character class */
+	void StartItemCurve(ANick_ShooterCharacter* Character);
+
+	/* Called when Item Interp Timer has finished */
+	void FinishInterping();
+
+	void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -52,6 +61,9 @@ protected:
 
 	/* Sets the properties of the item based on its state *** ie. physics and collision */
 	void SetItemProps(EItemState State);
+
+	/* Handles the interpolation of the item when in the Equipping State */
+	void InterpItem(float DeltaTime);
 
 private:
 	/* Used for setting the Weapon Mesh */
@@ -85,6 +97,48 @@ private:
 	/* State that the item is currently in */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	EItemState ItemState;
+
+	/* Curve Table used for the Items Z Location when Interpolating */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCurveFloat> InterpZCurve;
+
+	/* The location where the item starts interping */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	FVector ItemInterpStartLocation;
+
+	/* The location for the desired target in front of the camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	FVector ItemTargetLocation;
+
+	/* True when Interping */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	bool bInterpingItem;
+
+	/* Plays when we start interping */
+	FTimerHandle ItemInterpTimerHandle;
+
+	/* Duration of the curve and timer */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	float ZCurveTime;
+
+	/* Character Reference */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties | Do Not Edit", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ANick_ShooterCharacter> ShooterCharacter;
+
+	/* Used for adjusting the Items X and Y when Interpolating */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	float ItemXInterp;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	float ItemYInterp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	float ItemInterpSpeed;
+
+	/* Initial Yaw offset between item target comp and item */
+	float InitialYawOffset;
+
+	
 
 public:
 	FORCEINLINE TObjectPtr<UWidgetComponent> GetPickupWidget() const { return PickupWidget; }

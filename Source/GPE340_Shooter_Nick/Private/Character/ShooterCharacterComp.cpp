@@ -4,6 +4,7 @@
 #include "Character/ShooterCharacterComp.h"
 #include "Actors/Weapons/WeaponComp.h"
 #include "Actors/Weapons/Weapon_Base.h"
+#include "Camera/CameraComponent.h"
 #include "Character/InteractionComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
@@ -16,26 +17,27 @@
 
 UShooterCharacterComp::UShooterCharacterComp() :
 /* Member Initializer List : Put these in order by initialization */
-	/* Camera FOV Values */
+	// Camera FOV Values
 	DefaultCameraFOV(90.f),
 	AimingCameraFOV(40.f),
 	AimInterpSpeed(20.f),
-	/* Character Speed Values */
+	// Character Speed Values
 	DefaultCharacterSpeed(500.f),
 	AimingCharacterSpeed(350),
 	bIsAiming(false),
 	CurrentCameraFOV(0.f),
-	/* Aim Sensitivity */
+	// Aim Sensitivity
 	BaseLookUpRate(45.f),
 	BaseTurnRate(45.f),
 	AtReadyTurnRate(90.f),
 	AtReadyLookUpRate(90.f),
 	AimingTurnRate(25.f),
 	AimingLookUpRate(25.f),
-	/* Gun Input Variables */
+	// Gun Input Variables
 	bFireButtonDown(false),
 	bShouldFire(true),
 	CharacterState(ECharacterState::ECS_Unoccupied)
+	
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	
@@ -172,6 +174,8 @@ void UShooterCharacterComp::ReloadPressed()
 {
 	OwningCharacter->GetShooterController()->ReloadDelegate.Execute();
 }
+
+
 
 void UShooterCharacterComp::DropWeapon()
 {

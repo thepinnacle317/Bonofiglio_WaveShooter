@@ -41,7 +41,10 @@ Input Mapping Contexts = IMC_<Name>
 - Add a bool that will trigger with the drop and equip methods.  This will be used to go from the unarmed to armed states of animation.
 
 *** Character Attributes ***
-- This component will only hold values and methods that do not require casting to reference the games specific character.  
+- This component will only hold values and methods that do not require casting to reference the games specific character.
+
+*** Inventory Component *** 
+Will hold logic for drop, pickup, getItem, weapons array, grenade slot, and scrap held.
 
 *** Game Settings ***
 *Graphics
@@ -85,6 +88,7 @@ Give control to the player on finish.
 *** Level Objectives ***
 -Base Idea: Solve a few different puzzles to get the base up and running while you fend off a relentless attack of enemies
 (Basically CoD Zombies old school style but fighting robots that shoot back and are a lot more dynamic)
+- Ghost meshes with no collision that will take scrap to build them and help 
 
 *** Development Phases ***
 Phases

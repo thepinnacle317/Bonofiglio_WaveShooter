@@ -6,6 +6,17 @@
 #include "Animation/AnimInstance.h"
 #include "ShooterAnimInstance.generated.h"
 
+
+UENUM(BlueprintType)
+enum EAOStates : uint8
+{
+	EAO_Aiming UMETA(DisplayName = "Aiming"),
+	EAO_AtReady UMETA(DisplayName = "At Ready"),
+	EAO_Reloading UMETA(DisplayName = "Reloading"),
+	EAO_IsInAir UMETA(DisplayName = "Is In Air"),
+
+	EAO_Max UMETA(DisplayName = "Default Max")
+};
 /**
  * 
  */
@@ -27,6 +38,9 @@ public:
 protected:
 	/* Core Turn In Place function for calculating the associated variables */
 	void TurnInPlace();
+
+	/* Used to calculate the values required for leaning during locomotion */
+	void Lean(float DeltaTime);
 
 private:
 
@@ -65,13 +79,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	float LastFrameOffsetYaw;
 
-	/* The current Yaw of the character */
+	/* The Yaw of the character if standing still and not in the air */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement | Turn In Place", meta = (AllowPrivateAccess = "true"))
-	 float CharacterYaw;
+	 float TIPYaw;
 
-	/* Yaw of the character from the previos frame */
+	/* The Yaw of the character if standing still and not in the air */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement | Turn In Place", meta = (AllowPrivateAccess = "true"))
-	float LastFrameCharacterYaw;
+	float LastFrameTIPYaw;
 
 	/* The offset to be applied to the root bone when rotating the character *** This is a difference amount */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement | Turn In Place", meta = (AllowPrivateAccess = "true"))
@@ -88,4 +102,20 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement | Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
+
+	/* Used to determine the type of offset that the character will use during animation and gameplay */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement | Turn In Place", meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<EAOStates> AOStates;
+
+	/* Current character yaw */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement | Lean", meta = (AllowPrivateAccess = "true"))
+	FRotator CharacterRotation;
+
+	/* Character yaw from the previous frame */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement | Lean", meta = (AllowPrivateAccess = "true"))
+	FRotator LastFrameCharacterRotation;
+
+	/* Used for leaning with the blendspace while running */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Movement | Lean", meta = (AllowPrivateAccess = "true"))
+	float YawDelta;
 };

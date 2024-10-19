@@ -33,6 +33,9 @@ ANick_ShooterCharacter::ANick_ShooterCharacter()
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
+	ItemInterpTargetComp = CreateDefaultSubobject<USceneComponent>(TEXT("Item Target Location"));
+	ItemInterpTargetComp->SetupAttachment(CameraBoom);
+
 	/* Rotate the character to player input movement */
 	// TODO: This will change when strafe movement is implemented along with combat states.
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -44,6 +47,18 @@ ANick_ShooterCharacter::ANick_ShooterCharacter()
 	ShooterCharacterComp = CreateDefaultSubobject<UShooterCharacterComp>(TEXT("Shooter Character Component"));
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("Interaction Component"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
+}
+
+FVector ANick_ShooterCharacter::GetTargetInterpLocation()
+{
+	// Component location in the world
+	const FVector TargetWorldLocation{ ItemInterpTargetComp->GetComponentLocation() };
+	const FVector TargetForward{ ItemInterpTargetComp->GetForwardVector() };
+
+	// Desired Interp Location = ComponentWorldLocation + Forward * A + Up * B + Right * 
+	return TargetWorldLocation +
+		(TargetForward + GetInventoryComp()->CameraInterpForaward) + 
+			FVector(0.f, 0.f, GetInventoryComp()->CameraInterpUp);
 }
 
 void ANick_ShooterCharacter::BeginPlay()
