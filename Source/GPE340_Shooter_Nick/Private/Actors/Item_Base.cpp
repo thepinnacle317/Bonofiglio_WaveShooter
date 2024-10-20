@@ -21,7 +21,8 @@ ZCurveTime(.7f),
 ItemXInterp(0.f),
 ItemYInterp(0.f),
 ItemInterpSpeed(15.f),
-InitialYawOffset(0.f)
+InitialYawOffset(0.f),
+PickupType(EPickupType::EPT_Max)
 {
 	// True so we can interp the item location effect
 	PrimaryActorTick.bCanEverTick = true;
@@ -70,7 +71,11 @@ void AItem_Base::FinishInterping()
 	{
 		ShooterCharacter->GetInventoryComp()->GetPickupItem(this);
 	}
+	
+	// Zero out target location data
 	ItemTargetLocation = FVector(0.f);
+	// Set Scale back to default size
+	SetActorScale3D(FVector(1.f));
 }
 
 void AItem_Base::Tick(float DeltaSeconds)
@@ -253,7 +258,14 @@ void AItem_Base::InterpItem(float DeltaTime)
 		const FRotator ComponentRotation{ ShooterCharacter->GetItemInterpTargetComp()->GetComponentRotation() };
 		FRotator ItemRotation{ 0.f, ComponentRotation.Yaw + InitialYawOffset, 0.f};
 		SetActorRotation(ItemRotation, ETeleportType::TeleportPhysics);
-		
+
+		if (ItemScaleCurve)
+		{
+			const float CurveScaleValue = ItemScaleCurve->GetFloatValue(ElapsedTime);
+
+			/* Scale Item */
+			SetActorScale3D(FVector(CurveScaleValue, CurveScaleValue, CurveScaleValue));
+		}
 	}
 }
 

@@ -32,7 +32,7 @@ public:
 	FFireDelegate OnFiredWeapon;
 	FAimDelegate OnAiming;
 
-	FVector GetTargetInterpLocation();
+	const FVector GetTargetInterpLocation() const;
 
 protected:
 	

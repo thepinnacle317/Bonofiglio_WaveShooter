@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/Nick_ShooterCharacter.h"
 #include "Character/ShooterCharacterComp.h"
+#include "Interfaces/ProjectileImpactInterface.h"
 
 
 UWeaponComp::UWeaponComp() :
@@ -114,14 +115,7 @@ void UWeaponComp::WeaponTrace()
 	// Check for hit between the weapons muzzle and the VaporEndPoint
 	if (WeaponHitResults.bBlockingHit)
 	{
-		// Set the endpoint to the object hit location between the muzzle and where the crosshair is aiming.
-		OwningShooterCharacter->GetShooterComp()->SetVaporEndpoint(WeaponHitResults.Location);
-	}
-	/*** Spawn the impact particles where the blocking hit was ***/
-	if (OwningShooterCharacter->GetShooterComp()->ImpactFX)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OwningShooterCharacter->GetShooterComp()->ImpactFX,
-			OwningShooterCharacter->GetShooterComp()->GetVaporEndpoint());
+		
 	}
 }
 
@@ -134,7 +128,6 @@ void UWeaponComp::StartFireTimer()
 
 	// Start the firing timer
 	GetWorld()->GetTimerManager().SetTimer(AutoFireTimer, this, &UWeaponComp::FireTimerReset, AutoFireRate, false);
-
 }
 
 void UWeaponComp::FireTimerReset()

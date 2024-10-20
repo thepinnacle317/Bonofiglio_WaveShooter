@@ -11,6 +11,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameCore/Nick_ShooterPlayerController.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/ProjectileImpactInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -88,34 +89,33 @@ void UShooterCharacterComp::CrosshairTrace()
 		const FVector Start{CrosshairWorldPosition};
 		const FVector End{CrosshairWorldPosition + CrosshairWorldDirection * CrosshairTraceLength};
 
-		// Set Beam end location for particle effects if no hit.
-		VaporEndPoint = End;
-
 		// Perform Line Trace From Crosshair.
 		GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECC_Visibility);
-
 		/* Spawn Impact Particles */
 		if (ScreenTraceHit.bBlockingHit)
 		{
-			/* End the beam particle where the blocking hit was */
-			VaporEndPoint = ScreenTraceHit.Location;
+			if (ScreenTraceHit.GetActor()->IsValidLowLevel())
+			{
+				IProjectileImpactInterface* ProjectileImpactInterface = Cast<IProjectileImpactInterface>(ScreenTraceHit.GetActor());
+				if (ProjectileImpactInterface)
+				{
+					ProjectileImpactInterface->ProjectileHit_Implementation(ScreenTraceHit);
+				}
+				else
+				{
+					/*** Spawn the impact particles where the blocking hit was ***/
+					if (ImpactFX)
+					{
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX,
+							ScreenTraceHit.Location);
+					}
+				}
+			}
 		}
-
 		if (CurrentWeapon != nullptr)
 		{
 			// Call WeaponTrace Delegate
 			CurrentWeapon->WeaponComponent->WeaponTraceDelegate.Execute();
-		}
-		
-		/* Spawn the Beam Vapor Trail */
-		if (VaporTrail)
-		{
-			UParticleSystemComponent* VaporBeam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), VaporTrail, SocketTransform);
-			if (VaporBeam)
-			{
-				// End the beam based on the vector and parameter value.
-				VaporBeam->SetVectorParameter(FName("Target"), VaporEndPoint);
-			}
 		}
 	}
 }

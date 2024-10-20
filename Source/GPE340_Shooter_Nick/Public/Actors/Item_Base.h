@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PickupType.h"
 #include "GameFramework/Actor.h"
 #include "Item_Base.generated.h"
 
@@ -137,6 +138,14 @@ private:
 
 	/* Initial Yaw offset between item target comp and item */
 	float InitialYawOffset;
+
+	/* Curve that is used to scale the item when interpolating */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCurveFloat> ItemScaleCurve;
+
+	/* Enum that classifies the type of item that the pickup is */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item Properties | Pickup Type", meta = (AllowPrivateAccess = "true"))
+	EPickupType PickupType;
 
 	
 
