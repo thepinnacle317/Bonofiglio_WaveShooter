@@ -25,11 +25,11 @@ void UAttributeComponent::BeginPlay()
 
 void UAttributeComponent::Die()
 {
-	// Play electrical explosion
-	// Ragdoll Enemy
-	// Hide Health bar
-	// Disable Collision
-	// Drop Scrap
+	// TODO:Play electrical explosion
+	// TODO:Ragdoll Enemy
+	// TODO:Hide Health bar
+	// TODO:Disable Collision
+	// TODO:Drop Scrap
 	GetOwner()->Destroy();
 }
 

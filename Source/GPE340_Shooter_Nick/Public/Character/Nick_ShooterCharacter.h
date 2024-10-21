@@ -4,10 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/PickupInterface.h"
 #include "Nick_ShooterCharacter.generated.h"
 
-class UAttributeComponent;
-class ANick_ShooterPlayerController;
 /* Forward Declarations */
 class UShooterCharacterComp;
 class UCameraComponent;
@@ -15,12 +14,14 @@ class USpringArmComponent;
 class UAnimMontage;
 class UInventoryComponent;
 class UInteractionComponent;
+class UAttributeComponent;
+class ANick_ShooterPlayerController;
 
 DECLARE_DELEGATE(FFireDelegate);
 DECLARE_DELEGATE(FAimDelegate);
 
 UCLASS()
-class GPE340_SHOOTER_NICK_API ANick_ShooterCharacter : public ACharacter
+class GPE340_SHOOTER_NICK_API ANick_ShooterCharacter : public ACharacter, public IPickupInterface
 {
 	GENERATED_BODY()
 
@@ -35,7 +36,7 @@ public:
 
 	FVector GetTargetInterpLocation();
 
-	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	

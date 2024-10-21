@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
 UENUM(BlueprintType)
 enum class EAmmoTypes: uint8
 {
-	EA_Pistol UMETA(DisplayName = "Pistol Ammo"),
-	EA_Rifle UMETA(DisplayName = "Rifle Ammo"),
-	EA_Special UMETA(DisplayName = "Special Ammo"),
+	EAT_PistolAmmo UMETA(DisplayName = "Pistol Ammo"),
+	EAT_RifleAmmo UMETA(DisplayName = "Rifle Ammo"),
+	EAT_SpecialAmmo UMETA(DisplayName = "Special Ammo"),
 
-	EA_Max UMETA(DisplayName = "Default Max")
+	EAT_Max UMETA(DisplayName = "Default Max")
 };

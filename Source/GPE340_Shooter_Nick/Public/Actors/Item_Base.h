@@ -61,10 +61,14 @@ protected:
 	void SetItemRarity();
 
 	/* Sets the properties of the item based on its state *** ie. physics and collision */
-	void SetItemProps(EItemState State);
+	virtual void SetItemProps(EItemState State);
 
 	/* Handles the interpolation of the item when in the Equipping State */
 	void InterpItem(float DeltaTime);
+
+	/* Pickup Effects */
+	void PlayPickupSound();
+	void PlayPickupEffects();
 
 private:
 	/* Used for setting the Weapon Mesh */
@@ -129,10 +133,10 @@ private:
 	/* Used for adjusting the Items X and Y when Interpolating */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
 	float ItemXInterp;
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
 	float ItemYInterp;
 
+	/* How fast the item will move along to its target location */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties | Interpolation", meta = (AllowPrivateAccess = "true"))
 	float ItemInterpSpeed;
 
@@ -147,6 +151,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item Properties | Pickup Type", meta = (AllowPrivateAccess = "true"))
 	EPickupType PickupType;
 
+	/* Pickup sound effect */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item Properties | Pickup Effects", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> PickupSFX;
+
+	/* Pickup visual effect */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item Properties | Pickup Effects", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem> PickupVFX;
+
+	/* Used to specify a specific location for where the pickup effect will be spawned */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item Properties | Pickup Effects", meta = (AllowPrivateAccess = "true"))
+	FVector Location = GetActorLocation() - FVector(0.f, 0.f, 0.f);
+
 	
 
 public:
@@ -155,5 +171,6 @@ public:
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	void SetItemState(EItemState State);
 	FORCEINLINE TObjectPtr<USkeletalMeshComponent> GetItemMesh() const { return ItemMesh; }
+	FORCEINLINE int32 GetItemAmount() const { return ItemAmount; }
 	
 };

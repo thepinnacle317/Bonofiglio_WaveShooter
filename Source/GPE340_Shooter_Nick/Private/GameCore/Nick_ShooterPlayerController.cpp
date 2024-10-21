@@ -48,7 +48,7 @@ void ANick_ShooterPlayerController::SetupInputComponent()
 	ShooterInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 	ShooterInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::JumpStarted);
 	ShooterInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::JumpEnd);
-	ShooterInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ThisClass::Firing);
+	ShooterInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ThisClass::Firing);
 	ShooterInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ThisClass::NotFiring);
 	ShooterInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &ThisClass::AimStarted);
 	ShooterInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ThisClass::AimCompleted);

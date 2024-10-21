@@ -2,11 +2,11 @@
 
 
 #include "Actors/Item_Base.h"
-
 #include "Character/InventoryComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AItem_Base::AItem_Base():
@@ -266,6 +266,22 @@ void AItem_Base::InterpItem(float DeltaTime)
 			/* Scale Item */
 			SetActorScale3D(FVector(CurveScaleValue, CurveScaleValue, CurveScaleValue));
 		}
+	}
+}
+
+void AItem_Base::PlayPickupSound()
+{
+	if (PickupSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, PickupSFX, GetActorLocation());
+	}
+}
+
+void AItem_Base::PlayPickupEffects()
+{
+	if (PickupVFX)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, PickupVFX, Location);
 	}
 }
 

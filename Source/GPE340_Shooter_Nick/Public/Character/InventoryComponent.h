@@ -7,6 +7,7 @@
 #include "InventoryEnums.h"
 #include "InventoryComponent.generated.h"
 
+class AAmmoItem;
 class AItem_Base;
 class ANick_ShooterCharacter;
 
@@ -30,6 +31,8 @@ public:
 	bool HasAmmoType();
 
 	void GetPickupItem(AItem_Base* PickupItem);
+
+	void PickupAmmo(AAmmoItem* AmmoItem);
 	
 	/* Map that keeps track of the ammo types held by the player using a key value pair */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory Properties | Ammo")

@@ -2,25 +2,51 @@
 
 
 #include "Actors/Ammo/AmmoItem.h"
-#include "Components/BoxComponent.h"
-#include "Components/WidgetComponent.h"
+#include "Character/InventoryComponent.h"
+#include "Character/Nick_ShooterCharacter.h"
+#include "Components/SphereComponent.h"
+#include "Interfaces/PickupInterface.h"
 
-AAmmoItem::AAmmoItem()
+AAmmoItem::AAmmoItem() :
+/* Member Initializer List */
+AmmoType(EAmmoTypes::EAT_Max)
 {
-	/* Constructs the Ammo Mesh and sets it as the root component */
-	AmmoMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ammo Mesh"));
-	SetRootComponent(AmmoMesh);
-
-	GetPickupWidget()->SetupAttachment(GetRootComponent());
-	GetCollisionBox()->SetupAttachment(GetRootComponent());
-}
-
-void AAmmoItem::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
+	// True so we can interp the item location effect
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AAmmoItem::BeginPlay()
 {
 	Super::BeginPlay();
+	GetPickupShpere()->OnComponentBeginOverlap.AddDynamic(this, &AAmmoItem::OnSphereOverlap);
+	GetPickupShpere()->OnComponentBeginOverlap.AddDynamic(this, &AAmmoItem::OnSphereEndOverlap);
+}
+
+void AAmmoItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IPickupInterface* PickupInterface = Cast<IPickupInterface>(OtherActor);
+	if (PickupInterface)
+	{
+		PickupInterface->SetOverlappingItem(this);
+		ANick_ShooterCharacter* PickupCharacter = Cast<ANick_ShooterCharacter>(OtherActor);
+		if (PickupCharacter)
+		{
+			PickupCharacter->GetInventoryComp()->PickupAmmo(this);
+		}
+		PlayPickupSound();
+		PlayPickupEffects();
+		
+		Destroy();
+	}
+}
+
+void AAmmoItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IPickupInterface* PickupInterface = Cast<IPickupInterface>(OtherActor);
+	if (PickupInterface)
+	{
+		PickupInterface->SetOverlappingItem(nullptr);
+	}
 }

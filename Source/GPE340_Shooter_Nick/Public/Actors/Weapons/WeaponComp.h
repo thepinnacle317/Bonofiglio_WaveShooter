@@ -121,6 +121,9 @@ private:
 	/* Plays the Sound associated with the weapon when firing */
 	void PlayWeaponSound();
 
+	/* Spawn the particle system when firing the weapon */
+	void SpawnMuzzleFlash();
+
 	/* Plays the weapon Fire Montage */
 	void PlayFireMontage();
 
@@ -149,6 +152,18 @@ private:
 	/* Defines the classification of the weapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Weapon Archetype", meta = (AllowPrivateAccess = "true"))
 	EWeaponClassification WeaponClassification;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Effects", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> WeaponSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Effects", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem> WeaponMuzzleVFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Combat | Weapons", meta = (AllowPrivateAccess = "true"))
+	bool bIsAutomatic;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Combat | Weapons", meta = (AllowPrivateAccess = "true"))
+	FName MuzzleSocket;
 
 public:
 	FORCEINLINE void SetOwningShooterCharacter(ANick_ShooterCharacter* ShooterCharacter) { OwningShooterCharacter = ShooterCharacter; }

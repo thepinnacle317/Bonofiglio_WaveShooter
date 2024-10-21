@@ -20,10 +20,11 @@ WeaponThrowTime(.4f),
 bIsFalling(false),
 AmmoInGun(0),
 WeaponTypes(EWeaponTypes::EWT_Rifle),
-AmmoType(EAmmoTypes::EA_Rifle),
+AmmoType(EAmmoTypes::EAT_RifleAmmo),
 MagazineCapacity(30),
 HeldAmmo(0),
-bInitialized(false)
+bInitialized(false),
+bIsAutomatic(true)
 
 {
 	/* Must be true for this component */
@@ -78,7 +79,18 @@ bool UWeaponComp::MagIsFull()
 
 void UWeaponComp::PlayWeaponSound()
 {
-	
+	if (WeaponSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, WeaponSFX, GetOwner()->GetActorLocation(), FRotator(0.f));
+	}
+}
+
+void UWeaponComp::SpawnMuzzleFlash()
+{
+	if (WeaponMuzzleVFX)
+	{
+		UGameplayStatics::SpawnEmitterAttached(WeaponMuzzleVFX, OwningActor->GetItemMesh(), MuzzleSocket);
+	}
 }
 
 void UWeaponComp::PlayFireMontage()
@@ -142,7 +154,7 @@ void UWeaponComp::WeaponTrace()
 	// Check for hit between the weapons muzzle and the VaporEndPoint
 	if (WeaponHitResults.bBlockingHit)
 	{
-		
+		// TODO:Spawn emitter for hit between 
 	}
 }
 
@@ -161,7 +173,7 @@ void UWeaponComp::FireTimerReset()
 {
 	if (OwningShooterCharacter == nullptr) return;
 
-	// Set the character state to firing 
+	// Reset the character state from firing 
 	OwningShooterCharacter->GetShooterComp()->CharacterState = ECharacterState::ECS_Unoccupied;
 	
 	// Check to make sure the gun has ammo
@@ -209,16 +221,30 @@ void UWeaponComp::FireWeapon()
 
 	if (OwningShooterCharacter->GetInventoryComp()->HasAmmoInGun())
 	{
-		//TODO: Add weapon sound logic here.  Should be setup so that it can be swapped out and take a sound cue.
-		//PlayWeaponSound();
-
-		/* Play the weapon firing montage */
-		PlayFireMontage();
-
-		/* Subtract one from the ammo each time it is fired */
-		DecrementAmmo();
-
-		StartFireTimer();
+		if (bIsAutomatic)
+		{
+			PlayWeaponSound();
+			SpawnMuzzleFlash();
+			/* Play the weapon firing montage */
+			PlayFireMontage();
+			/* Subtract one from the ammo each time it is fired */
+			DecrementAmmo();
+			StartFireTimer();
+		}
+		/* Semi Auto */
+		else
+		{
+			// Set the character state to firing 
+			OwningShooterCharacter->GetShooterComp()->CharacterState = ECharacterState::ECS_Firing;
+			PlayWeaponSound();
+			SpawnMuzzleFlash();
+			/* Play the weapon firing montage */
+			PlayFireMontage();
+			/* Subtract one from the ammo each time it is fired */
+			DecrementAmmo();
+			// Reset the character state from firing 
+			OwningShooterCharacter->GetShooterComp()->CharacterState = ECharacterState::ECS_Unoccupied;
+		}
 	}
 }
 

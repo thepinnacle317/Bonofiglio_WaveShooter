@@ -3,32 +3,39 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actors/Item_Base.h"
+#include "Actors/OverlapItem.h"
+#include "Character/InventoryEnums.h"
 #include "AmmoItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GPE340_SHOOTER_NICK_API AAmmoItem : public AItem_Base
+class GPE340_SHOOTER_NICK_API AAmmoItem : public AOverlapItem
 {
 	GENERATED_BODY()
 
 public:
 	AAmmoItem();
-	virtual void Tick(float DeltaSeconds) override;
+	/* Overlap Functions */
+	UFUNCTION()
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 
 protected:
 	virtual void BeginPlay() override;
 
-private:
+	
 
-	/* Mesh the will be visible for ammo pickups in the world */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ammo Properties", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> AmmoMesh;
+private:
+	/* Classifies the ammo type for the pickup */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ammo", meta = (AllowPrivateAccess = "true"))
+	EAmmoTypes AmmoType;
 
 public:
-	/* Public Getters and Setters */
-	FORCEINLINE TObjectPtr<UStaticMeshComponent> GetAmmoMesh() const { return AmmoMesh; }
+
+	FORCEINLINE EAmmoTypes GetAmmoType() const { return AmmoType; }
 	
 };
