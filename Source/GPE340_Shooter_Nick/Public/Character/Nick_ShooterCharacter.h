@@ -33,7 +33,9 @@ public:
 	FFireDelegate OnFiredWeapon;
 	FAimDelegate OnAiming;
 
-	const FVector GetTargetInterpLocation() const;
+	FVector GetTargetInterpLocation();
+
+	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	

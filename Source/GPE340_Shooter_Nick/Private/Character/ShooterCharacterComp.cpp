@@ -5,6 +5,7 @@
 #include "Actors/Weapons/WeaponComp.h"
 #include "Actors/Weapons/Weapon_Base.h"
 #include "Camera/CameraComponent.h"
+#include "Character/AttributeComponent.h"
 #include "Character/InteractionComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
@@ -86,17 +87,18 @@ void UShooterCharacterComp::CrosshairTrace()
 	// Was the deprojection successful
 	if (bScreenToWorld)
 	{
-		FHitResult ScreenTraceHit;
 		const FVector Start{CrosshairWorldPosition};
 		const FVector End{CrosshairWorldPosition + CrosshairWorldDirection * CrosshairTraceLength};
 
 		// Perform Line Trace From Crosshair.
 		GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECC_Visibility);
+		
 		/* Spawn Impact Particles */
 		if (ScreenTraceHit.bBlockingHit)
 		{
 			if (ScreenTraceHit.GetActor()->IsValidLowLevel())
 			{
+				// Get projectile interface from hit actor
 				IProjectileImpactInterface* ProjectileImpactInterface = Cast<IProjectileImpactInterface>(ScreenTraceHit.GetActor());
 				if (ProjectileImpactInterface)
 				{
@@ -111,28 +113,10 @@ void UShooterCharacterComp::CrosshairTrace()
 							ScreenTraceHit.Location);
 					}
 				}
-
-				AEnemyBase* HitEnemy = Cast<AEnemyBase>(ScreenTraceHit.GetActor());
-				if (HitEnemy)
+				if (CurrentWeapon)
 				{
-					// Crit Hit Damage
-					if (ScreenTraceHit.BoneName.ToString() == HitEnemy->GetCritHitBone())
-					{
-						UGameplayStatics::ApplyDamage(HitEnemy,
-						CurrentWeapon->GetWeaponComponent()->GetCritHitDamage(),
-						OwningCharacter->GetController(),
-						OwningCharacter,
-						UDamageType::StaticClass());
-					}
-					// Normal Weapon Damage
-					else
-					{
-						UGameplayStatics::ApplyDamage(HitEnemy,
-						CurrentWeapon->GetWeaponComponent()->GetWeaponDamage(),
-						OwningCharacter->GetController(),
-						OwningCharacter,
-						UDamageType::StaticClass());
-					}
+					/*** Have the weapon deal damage to the Hit Actor ***/
+					CurrentWeapon->GetWeaponComponent()->DealDamage(ScreenTraceHit);
 				}
 			}
 		}

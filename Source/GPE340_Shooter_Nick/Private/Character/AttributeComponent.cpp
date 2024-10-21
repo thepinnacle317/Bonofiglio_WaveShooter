@@ -17,12 +17,20 @@ MaxStamina(100.f)
 
 }
 
-
 // Called when the game starts
 void UAttributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
+void UAttributeComponent::Die()
+{
+	// Play electrical explosion
+	// Ragdoll Enemy
+	// Hide Health bar
+	// Disable Collision
+	// Drop Scrap
+	GetOwner()->Destroy();
 }
 
 

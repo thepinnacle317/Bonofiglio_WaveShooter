@@ -42,14 +42,20 @@ void AEnemyBase::ProjectileHit_Implementation(FHitResult HitResult)
 float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	if (GetAttributeComp()->GetHealth() - DamageAmount <= 0.f)
+	if (GetAttributeComp())
 	{
-		GetAttributeComp()->SetHealth(0.f);
+		if (GetAttributeComp()->GetHealth() - DamageAmount <= 0.f)
+		{
+			// Could be swapped for a clamp
+			GetAttributeComp()->SetHealth(0.f);
+			GetAttributeComp()->Die();
+		}
+		else
+		{
+			GetAttributeComp()->SetHealth(GetAttributeComp()->GetHealth() - DamageAmount);
+		}
 	}
-	else
-	{
-		GetAttributeComp()->SetHealth(GetAttributeComp()->GetHealth() - DamageAmount);
-	}
+	
 	return DamageAmount;
 }
 

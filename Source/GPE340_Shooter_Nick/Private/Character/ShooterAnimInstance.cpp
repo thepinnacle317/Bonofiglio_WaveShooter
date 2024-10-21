@@ -2,6 +2,9 @@
 
 
 #include "Character/ShooterAnimInstance.h"
+
+#include "Actors/Weapons/WeaponComp.h"
+#include "Actors/Weapons/Weapon_Base.h"
 #include "Character/Nick_ShooterCharacter.h"
 #include "Character/ShooterCharacterComp.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -102,6 +105,14 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 			}
 		}
 
+		// Check to see if there is a valid equipped weapon on the character
+		if (ShooterCharacter)
+		{
+			if (ShooterCharacter->GetShooterComp()->GetCurrentWeapon())
+			{
+				WeaponClassification = ShooterCharacter->GetShooterComp()->GetCurrentWeapon()->GetWeaponComponent()->GetWeaponClass();
+			}
+		}
 	}
 	/* Update the variables need to execute Turn In Place */
 	TurnInPlace();

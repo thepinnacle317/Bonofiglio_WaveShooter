@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WeaponClassification.h"
 #include "WeaponTypes.h"
 #include "Character/InventoryEnums.h"
 #include "Components/ActorComponent.h"
 #include "WeaponComp.generated.h"
-
 
 /* Weapon Delegates */
 DECLARE_DELEGATE(FWeaponTraceDelegate);
@@ -91,6 +91,8 @@ public:
 
 	void InitializeHeldAmmo();
 
+	void DealDamage(FHitResult HitResult);
+
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishedReloading();
@@ -124,7 +126,7 @@ private:
 
 	bool bInitialized;
 
-	/* Defines the archetype of the weapon */
+	/* Defines the type of the weapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Weapon Archetype", meta = (AllowPrivateAccess = "true"))
 	EWeaponTypes WeaponTypes;
 
@@ -144,6 +146,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Damage", meta = (AllowPrivateAccess = "true"))
 	float CriticalHitDamage;
 
+	/* Defines the classification of the weapon */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Weapon Archetype", meta = (AllowPrivateAccess = "true"))
+	EWeaponClassification WeaponClassification;
+
 public:
 	FORCEINLINE void SetOwningShooterCharacter(ANick_ShooterCharacter* ShooterCharacter) { OwningShooterCharacter = ShooterCharacter; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return AmmoInGun; }
@@ -153,5 +159,6 @@ public:
 	FORCEINLINE float GetWeaponDamage() const { return WeaponDamage; }
 	FORCEINLINE float GetCritHitDamage() const { return CriticalHitDamage; }
 	FORCEINLINE void SetWeaponDamage(float Damage) { WeaponDamage = Damage;}
+	FORCEINLINE EWeaponClassification GetWeaponClass() const { return WeaponClassification; }
 	
 };

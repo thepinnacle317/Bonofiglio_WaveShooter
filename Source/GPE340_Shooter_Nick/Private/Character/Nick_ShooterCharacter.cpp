@@ -84,9 +84,29 @@ void ANick_ShooterCharacter::Tick(float DeltaTime)
 	ShooterCharacterComp->SetAimSensitivity();
 }
 
-const FVector ANick_ShooterCharacter::GetTargetInterpLocation() const
+FVector ANick_ShooterCharacter::GetTargetInterpLocation()
 {
 	return ItemInterpTargetComp->GetComponentLocation();
+}
+
+float ANick_ShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser)
+{
+	if (GetAttributeComp())
+	{
+		if (GetAttributeComp()->GetHealth() - DamageAmount <= 0.f)
+		{
+			// Could be swapped for a clamp
+			GetAttributeComp()->SetHealth(0.f);
+			GetAttributeComp()->Die();
+		}
+		else
+		{
+			GetAttributeComp()->SetHealth(GetAttributeComp()->GetHealth() - DamageAmount);
+		}
+	}
+	
+	return DamageAmount;
 }
 
 void ANick_ShooterCharacter::Aim()

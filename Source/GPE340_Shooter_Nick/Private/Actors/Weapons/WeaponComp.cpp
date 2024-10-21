@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/Nick_ShooterCharacter.h"
 #include "Character/ShooterCharacterComp.h"
+#include "EnemyAI/EnemyBase.h"
 #include "Interfaces/ProjectileImpactInterface.h"
 
 
@@ -29,6 +30,19 @@ bInitialized(false)
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+void UWeaponComp::BeginPlay()
+{
+	Super::BeginPlay();
+
+	/* Get the weapon that owns this component */
+	OwningActor = Cast<AWeapon_Base>(GetOwner());
+		
+	/* Bind the Fire Function */
+	WeaponTraceDelegate.BindUObject(this, &UWeaponComp::WeaponTrace);
+
+	bInitialized = false;
+}
+
 void UWeaponComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -48,19 +62,6 @@ void UWeaponComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 			bInitialized = true;
 		}
 	}
-}
-
-void UWeaponComp::BeginPlay()
-{
-	Super::BeginPlay();
-
-	/* Get the weapon that owns this component */
-	OwningActor = Cast<AWeapon_Base>(GetOwner());
-		
-	/* Bind the Fire Function */
-	WeaponTraceDelegate.BindUObject(this, &UWeaponComp::WeaponTrace);
-
-	bInitialized = false;
 }
 
 void UWeaponComp::StopFalling()
@@ -99,6 +100,32 @@ void UWeaponComp::InitializeHeldAmmo()
 {
 	// Set ammo held to the type that matches the weapon in the inventory ammo map
 	HeldAmmo = OwningShooterCharacter->GetInventoryComp()->AmmoMap[AmmoType];
+}
+
+void UWeaponComp::DealDamage(FHitResult HitResult)
+{
+	AEnemyBase* HitEnemy = Cast<AEnemyBase>(HitResult.GetActor());
+	if (HitEnemy)
+	{
+		// Crit Hit Damage
+		if (HitResult.BoneName.ToString() == HitEnemy->GetCritHitBone())
+		{
+			UGameplayStatics::ApplyDamage(HitEnemy,
+			GetCritHitDamage(),
+			OwningShooterCharacter->GetController(),
+			OwningShooterCharacter,
+			UDamageType::StaticClass());
+		}
+		// Normal Weapon Damage
+		else
+		{
+			UGameplayStatics::ApplyDamage(HitEnemy,
+			GetWeaponDamage(),
+			OwningShooterCharacter->GetController(),
+			OwningShooterCharacter,
+			UDamageType::StaticClass());
+		}
+	}
 }
 
 /** Perform a trace from the weapon's muzzle to the

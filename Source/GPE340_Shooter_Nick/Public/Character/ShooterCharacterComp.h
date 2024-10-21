@@ -139,6 +139,11 @@ public:
 	ECharacterState CharacterState;
 
 
+	/* Crosshair Hit Results */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Shooter Core | Combat Properties | Hit Results")
+	FHitResult ScreenTraceHit;
+
+
 
 protected:
 	virtual void BeginPlay() override;

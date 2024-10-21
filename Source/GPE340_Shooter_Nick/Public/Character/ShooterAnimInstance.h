@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actors/Weapons/WeaponClassification.h"
 #include "Animation/AnimInstance.h"
 #include "ShooterAnimInstance.generated.h"
 
@@ -118,4 +119,8 @@ private:
 	/* Used for leaning with the blendspace while running */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Movement | Lean", meta = (AllowPrivateAccess = "true"))
 	float YawDelta;
+
+	/* Used to define the classification of the equipped weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Combat | Weapon", meta = (AllowPrivateAccess = "true"))
+	EWeaponClassification WeaponClassification;
 };
