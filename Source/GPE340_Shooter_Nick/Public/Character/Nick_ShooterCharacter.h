@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Nick_ShooterCharacter.generated.h"
 
+class UAttributeComponent;
 class ANick_ShooterPlayerController;
 /* Forward Declarations */
 class UShooterCharacterComp;
@@ -71,29 +72,20 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interpolation", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> ItemInterpTargetComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAttributeComponent> AttributeComponent;
 	
 
 public:
-
-	/* Returns Camera Boom Subobject */
+	
 	FORCEINLINE TObjectPtr<USpringArmComponent> GetCameraBoom() const { return CameraBoom; }
-
-	/* Returns Follow Camera Subobject */
 	FORCEINLINE TObjectPtr<UCameraComponent> GetFollowCamera() const { return FollowCamera; }
-
-	/* Returns the Shooter Component */
 	FORCEINLINE TObjectPtr<UShooterCharacterComp> GetShooterComp() const { return ShooterCharacterComp; }
-
-	/* Returns the Interaction Component */
 	FORCEINLINE TObjectPtr<UInteractionComponent> GetInteractComp() const { return InteractionComponent; }
-
-	/* Returns the Inventory Component */
 	FORCEINLINE TObjectPtr<UInventoryComponent> GetInventoryComp() const { return InventoryComponent; }
-
-	/* Returns the owning shooter player controller */
 	FORCEINLINE TObjectPtr<ANick_ShooterPlayerController> GetShooterController() const { return OwningController; }
-
-	/* Returns the Component used to interpolate items to */
 	FORCEINLINE TObjectPtr<USceneComponent> GetItemInterpTargetComp() const { return ItemInterpTargetComp; }
+	FORCEINLINE TObjectPtr<UAttributeComponent> GetAttributeComp() const { return  AttributeComponent; }
 
 };

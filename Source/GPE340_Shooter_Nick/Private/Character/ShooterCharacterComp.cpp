@@ -8,6 +8,7 @@
 #include "Character/InteractionComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
+#include "EnemyAI/EnemyBase.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameCore/Nick_ShooterPlayerController.h"
 #include "GameFramework/Character.h"
@@ -108,6 +109,29 @@ void UShooterCharacterComp::CrosshairTrace()
 					{
 						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX,
 							ScreenTraceHit.Location);
+					}
+				}
+
+				AEnemyBase* HitEnemy = Cast<AEnemyBase>(ScreenTraceHit.GetActor());
+				if (HitEnemy)
+				{
+					// Crit Hit Damage
+					if (ScreenTraceHit.BoneName.ToString() == HitEnemy->GetCritHitBone())
+					{
+						UGameplayStatics::ApplyDamage(HitEnemy,
+						CurrentWeapon->GetWeaponComponent()->GetCritHitDamage(),
+						OwningCharacter->GetController(),
+						OwningCharacter,
+						UDamageType::StaticClass());
+					}
+					// Normal Weapon Damage
+					else
+					{
+						UGameplayStatics::ApplyDamage(HitEnemy,
+						CurrentWeapon->GetWeaponComponent()->GetWeaponDamage(),
+						OwningCharacter->GetController(),
+						OwningCharacter,
+						UDamageType::StaticClass());
 					}
 				}
 			}

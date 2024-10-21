@@ -3,6 +3,7 @@
 
 #include "Character/Nick_ShooterCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Character/AttributeComponent.h"
 #include "Character/InteractionComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/ShooterCharacterComp.h"
@@ -47,23 +48,9 @@ ANick_ShooterCharacter::ANick_ShooterCharacter()
 	ShooterCharacterComp = CreateDefaultSubobject<UShooterCharacterComp>(TEXT("Shooter Character Component"));
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("Interaction Component"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
+	AttributeComponent = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attribute Component"));
 }
 
-const FVector ANick_ShooterCharacter::GetTargetInterpLocation() const
-{
-	return ItemInterpTargetComp->GetComponentLocation();
-
-	/*
-	// Component location in the world
-	const FVector TargetWorldLocation{ ItemInterpTargetComp->GetComponentLocation() };
-	const FVector TargetForward{ ItemInterpTargetComp->GetForwardVector() };
-
-	// Desired Interp Location = ComponentWorldLocation + Forward * A + Up * B + Right * 
-	return TargetWorldLocation +
-		(TargetForward + GetInventoryComp()->CameraInterpForaward) + 
-			FVector(0.f, 0.f, GetInventoryComp()->CameraInterpUp);
-			*/
-}
 
 void ANick_ShooterCharacter::BeginPlay()
 {
@@ -95,6 +82,11 @@ void ANick_ShooterCharacter::Tick(float DeltaTime)
 	
 	/* Update the sensitivity rate based on the state of aiming */
 	ShooterCharacterComp->SetAimSensitivity();
+}
+
+const FVector ANick_ShooterCharacter::GetTargetInterpLocation() const
+{
+	return ItemInterpTargetComp->GetComponentLocation();
 }
 
 void ANick_ShooterCharacter::Aim()

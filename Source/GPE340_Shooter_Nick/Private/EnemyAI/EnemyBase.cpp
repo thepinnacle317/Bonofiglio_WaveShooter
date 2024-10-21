@@ -3,12 +3,16 @@
 
 #include "EnemyAI/EnemyBase.h"
 
+#include "Character/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
-AEnemyBase::AEnemyBase()
+AEnemyBase::AEnemyBase() :
+CritHitBone("head")
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	AttributeComponent = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attribute Component"));
 }
 
 void AEnemyBase::BeginPlay()
@@ -33,5 +37,19 @@ void AEnemyBase::ProjectileHit_Implementation(FHitResult HitResult)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, HitResult.Location, FRotator(0.f), true);
 	}
+}
+
+float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	if (GetAttributeComp()->GetHealth() - DamageAmount <= 0.f)
+	{
+		GetAttributeComp()->SetHealth(0.f);
+	}
+	else
+	{
+		GetAttributeComp()->SetHealth(GetAttributeComp()->GetHealth() - DamageAmount);
+	}
+	return DamageAmount;
 }
 

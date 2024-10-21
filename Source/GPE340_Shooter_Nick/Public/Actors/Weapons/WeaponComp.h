@@ -136,11 +136,22 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Ammunition", meta = (AllowPrivateAccess = "true"))
 	int32 MagazineCapacity;
 
+	/* Base Weapon Damage */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Damage", meta = (AllowPrivateAccess = "true"))
+	float WeaponDamage;
+
+	/* Damage done when hitting the enemy in a Crit Hit Spot */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties | Damage", meta = (AllowPrivateAccess = "true"))
+	float CriticalHitDamage;
+
 public:
 	FORCEINLINE void SetOwningShooterCharacter(ANick_ShooterCharacter* ShooterCharacter) { OwningShooterCharacter = ShooterCharacter; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return AmmoInGun; }
 	FORCEINLINE EWeaponTypes GetWeaponType() const { return WeaponTypes; }
 	FORCEINLINE EAmmoTypes GetAmmoType() const { return AmmoType; }
 	FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
+	FORCEINLINE float GetWeaponDamage() const { return WeaponDamage; }
+	FORCEINLINE float GetCritHitDamage() const { return CriticalHitDamage; }
+	FORCEINLINE void SetWeaponDamage(float Damage) { WeaponDamage = Damage;}
 	
 };
