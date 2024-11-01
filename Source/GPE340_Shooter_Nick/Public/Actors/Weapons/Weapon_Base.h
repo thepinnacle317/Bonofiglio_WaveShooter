@@ -10,6 +10,7 @@
 /* Forward Declarations */
 class UWeaponComp;
 class ANick_ShooterCharacter;
+class UParticleSystemComponent;
 
 /**
  * 
@@ -33,9 +34,6 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
-private:
-	
 
 public:
 	FORCEINLINE TObjectPtr<UWeaponComp> GetWeaponComponent() const { return WeaponComponent; }

@@ -2,7 +2,6 @@
 
 
 #include "Character/InventoryComponent.h"
-
 #include "Actors/Ammo/AmmoItem.h"
 #include "Actors/Weapons/WeaponComp.h"
 #include "Actors/Weapons/Weapon_Base.h"
@@ -31,6 +30,11 @@ void UInventoryComponent::BeginPlay()
 
 	/* Initialize Ammo Map */
 	InitialzeAmmoMap();
+
+	/* Spawn & Equip the weapon for the character at the start of play */
+	OwningCharacter->GetShooterComp()->EquipWeapon(OwningCharacter->GetShooterComp()->SpawnDefaultWeapon());
+	InventoryItems.Add(OwningCharacter->GetShooterComp()->GetCurrentWeapon());
+	OwningCharacter->GetShooterComp()->GetCurrentWeapon()->SetSlotIndex(1);
 }
 
 void UInventoryComponent::InitialzeAmmoMap()
@@ -70,7 +74,18 @@ void UInventoryComponent::GetPickupItem(AItem_Base* PickupItem)
 	auto Weapon = Cast<AWeapon_Base>(PickupItem);
 	if (Weapon)
 	{
-		OwningCharacter->GetShooterComp()->SwapWeapon(Weapon);
+		// Add the picked up weapon to the inventory array
+		if (InventoryItems.Num() < INVENTORY_CAPACITY)
+		{
+			Weapon->SetSlotIndex(InventoryItems.Num());
+			InventoryItems.Add(Weapon);
+			Weapon->SetItemState(EItemState::EIS_PickedUp);
+		}
+		// Current Inventory is full.  Swap the current weapon with the picked weapon.
+		else
+		{
+			OwningCharacter->GetShooterComp()->SwapWeapon(Weapon);
+		}
 	}
 }
 
@@ -97,4 +112,30 @@ void UInventoryComponent::PickupAmmo(AAmmoItem* AmmoItem)
 			}
 		}
 	}
+}
+
+void UInventoryComponent::SwitchWeapons(AWeapon_Base* WeaponToBeSwitched)
+{
+	// Check to make sure the inventory is large enough to allow for swapping
+	if (InventoryItems.Num() - 1 >= OwningCharacter->GetShooterComp()->GetCurrentWeapon()->GetSlotIndex())
+	{
+		// Set the item in the index to the item to swap
+		//OwningCharacter->GetShooterComp()->GetCurrentWeapon()->GetSlotIndex()
+		InventoryItems[OwningCharacter->GetShooterComp()->GetCurrentWeapon()->GetSlotIndex()] = WeaponToBeSwitched;
+		WeaponToBeSwitched->SetSlotIndex(OwningCharacter->GetShooterComp()->GetCurrentWeapon()->GetSlotIndex());
+	}
+}
+
+void UInventoryComponent::SwapInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex)
+{
+	if (CurrentItemIndex == NewItemIndex ||
+		NewItemIndex >= InventoryItems.Num() ||
+		OwningCharacter->GetShooterComp()->GetCharacterState() != ECharacterState::ECS_Unoccupied) return;
+
+	auto OldEquippedWeapon = OwningCharacter->GetShooterComp()->GetCurrentWeapon();
+	auto NewWeapon = Cast<AWeapon_Base>(InventoryItems[NewItemIndex]);
+	OwningCharacter->GetShooterComp()->EquipWeapon(NewWeapon);
+
+	OldEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
+	NewWeapon->SetItemState(EItemState::EIS_Equipped);
 }

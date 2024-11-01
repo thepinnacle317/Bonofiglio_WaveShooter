@@ -68,6 +68,11 @@ void UInteractionComponent::StartInteractionTimer()
 	if (ItemResults.bBlockingHit)
 	{
 		HitItem = Cast<AItem_Base>(ItemResults.GetActor());
+		if (HitItem && HitItem->GetItemState() == EItemState::EIS_Equipping)
+		{
+			HitItem = nullptr;
+		}
+		
 		if (HitItem && HitItem->GetPickupWidget())
 		{
 			// Set Widget visibilty

@@ -4,19 +4,14 @@
 #include "Character/ShooterCharacterComp.h"
 #include "Actors/Weapons/WeaponComp.h"
 #include "Actors/Weapons/Weapon_Base.h"
-#include "Camera/CameraComponent.h"
-#include "Character/AttributeComponent.h"
 #include "Character/InteractionComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
-#include "EnemyAI/EnemyBase.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameCore/Nick_ShooterPlayerController.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/ProjectileImpactInterface.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
-
 
 UShooterCharacterComp::UShooterCharacterComp() :
 /* Member Initializer List : Put these in order by initialization */
@@ -58,9 +53,7 @@ void UShooterCharacterComp::BeginPlay()
 
 	/* Base setting of the Camera FOV */
 	CurrentCameraFOV = DefaultCameraFOV;
-
-	/* Spawn & Equip the weapon for the character at the start of play */
-	EquipWeapon(SpawnDefaultWeapon());
+	
 }
 
 void UShooterCharacterComp::CrosshairTrace()
@@ -172,6 +165,7 @@ void UShooterCharacterComp::EquipWeapon(AWeapon_Base* WeaponToBeEquipped)
 
 void UShooterCharacterComp::SwapWeapon(AWeapon_Base* WeaponForSwapping)
 {
+	OwningCharacter->GetInventoryComp()->SwitchWeapons(WeaponForSwapping);
 	DropWeapon();
 	EquipWeapon(WeaponForSwapping);
 	OwningCharacter->GetInteractComp()->HitItem = nullptr;
@@ -182,8 +176,6 @@ void UShooterCharacterComp::ReloadPressed()
 {
 	OwningCharacter->GetShooterController()->ReloadDelegate.Execute();
 }
-
-
 
 void UShooterCharacterComp::DropWeapon()
 {

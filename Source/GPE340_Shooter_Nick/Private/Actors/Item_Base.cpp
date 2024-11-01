@@ -22,7 +22,8 @@ ItemXInterp(0.f),
 ItemYInterp(0.f),
 ItemInterpSpeed(15.f),
 InitialYawOffset(0.f),
-PickupType(EPickupType::EPT_Max)
+PickupType(EPickupType::EPT_Max),
+SlotIndex(0)
 {
 	// True so we can interp the item location effect
 	PrimaryActorTick.bCanEverTick = true;
@@ -190,6 +191,7 @@ void AItem_Base::SetItemProps(EItemState State)
 		/// * * Collision & Physics Props * * ///
 		ItemMesh->SetSimulatePhysics(true);
 		ItemMesh->SetEnableGravity(true);
+		ItemMesh->SetVisibility(true);
 		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		ItemMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 		ItemMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
@@ -207,6 +209,24 @@ void AItem_Base::SetItemProps(EItemState State)
 		ItemMesh->SetSimulatePhysics(false);
 		ItemMesh->SetEnableGravity(false);
 		ItemMesh->SetVisibility(true);
+
+		/* The mesh should not be using collision for interaction *** Uses the Interaction Box */
+		ItemMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		/// * * Collision & Physics Props * * ///
+		/* Clear all collision settings for the Collision Box */
+		CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+		/* Collsion Enabled should be turned off while the item/weapon is equipped */
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	case EItemState::EIS_PickedUp:
+		PickupWidget->SetVisibility(false);
+		
+		/* The item does not need physics while waiting to be picked up */
+		ItemMesh->SetSimulatePhysics(false);
+		ItemMesh->SetEnableGravity(false);
+		ItemMesh->SetVisibility(false);
 
 		/* The mesh should not be using collision for interaction *** Uses the Interaction Box */
 		ItemMesh->SetCollisionResponseToAllChannels(ECR_Ignore);

@@ -163,6 +163,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item Properties | Pickup Effects", meta = (AllowPrivateAccess = "true"))
 	FVector Location = GetActorLocation() - FVector(0.f, 0.f, 0.f);
 
+	/* The icon for the item in the inventory */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTexture2D> ItemIcon;
+
+	/* Slot in the inventory array */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	int32 SlotIndex;
+
 	
 
 public:
@@ -172,5 +180,7 @@ public:
 	void SetItemState(EItemState State);
 	FORCEINLINE TObjectPtr<USkeletalMeshComponent> GetItemMesh() const { return ItemMesh; }
 	FORCEINLINE int32 GetItemAmount() const { return ItemAmount; }
+	FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
+	FORCEINLINE void SetSlotIndex(int32 index) { SlotIndex = index; }
 	
 };

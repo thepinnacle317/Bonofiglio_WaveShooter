@@ -7,10 +7,12 @@
 #include "InventoryEnums.h"
 #include "InventoryComponent.generated.h"
 
+class AWeapon_Base;
 class AAmmoItem;
 class AItem_Base;
 class ANick_ShooterCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSwapItemDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GPE340_SHOOTER_NICK_API UInventoryComponent : public UActorComponent
@@ -33,6 +35,11 @@ public:
 	void GetPickupItem(AItem_Base* PickupItem);
 
 	void PickupAmmo(AAmmoItem* AmmoItem);
+
+	void SwitchWeapons(AWeapon_Base* WeaponToBeSwitched);
+
+	UFUNCTION(BlueprintCallable)
+	void SwapInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex);
 	
 	/* Map that keeps track of the ammo types held by the player using a key value pair */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory Properties | Ammo")
@@ -46,11 +53,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory Properties | Item Props")
 	float CameraInterpUp;
 
+	/* Unused for the moment */
+	UPROPERTY(BlueprintAssignable, Category="Inventory Delegate")
+	FSwapItemDelegate SwapItemDelegate;
+
 protected:
 	virtual void BeginPlay() override;
 
 	/* Used to initialize the ammo map with default values on play */
 	void InitialzeAmmoMap();
+
+	/* Array of Item Base for the inventory */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory Properties | Inventory", meta = (AllowPrivateAccess = "true"))
+	TArray<AItem_Base*> InventoryItems;
 
 private:
 
@@ -66,7 +81,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,  Category="Inventory Properties | Ammo", meta = (AllowPrivateAccess = "true"))
 	int32 DefaultSpecialAmmo;
 
+	const int32 INVENTORY_CAPACITY{ 3 };
+
 public:
 	//FORCEINLINE TMap<EAmmoTypes, int32> GetAmmoMap() const { return AmmoMap; }
+	FORCEINLINE TArray<AItem_Base*> GetInventory() { return InventoryItems; }
 		
 };

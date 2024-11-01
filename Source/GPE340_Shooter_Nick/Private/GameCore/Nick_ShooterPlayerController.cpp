@@ -198,15 +198,20 @@ void ANick_ShooterPlayerController::AimStarted()
 void ANick_ShooterPlayerController::AimCompleted()
 {
 	PossessedCharacter->GetShooterComp()->SetbIsAiming(false);
+
 	/* Set Character Walk Speed While Aiming */
 	PossessedCharacter->GetCharacterMovement()->MaxWalkSpeed = PossessedCharacter->GetShooterComp()->DefaultCharacterSpeed;
 }
 
 void ANick_ShooterPlayerController::Interact()
 {
+	if (PossessedCharacter->GetShooterComp()->GetCharacterState() != ECharacterState::ECS_Unoccupied) return;
+
 	if (PossessedCharacter && PossessedCharacter->GetInventoryComp() && PossessedCharacter->GetInteractComp()->HitItem)
 	{
 		PossessedCharacter->GetInteractComp()->HitItem->StartItemCurve(PossessedCharacter);
+		// Keeps from spamming the item curve animation
+		PossessedCharacter->GetInteractComp()->HitItem = nullptr;
 
 		/*  ** Used to test the swap weapon logic **
 		auto HitWeapon = Cast<AWeapon_Base>(PossessedCharacter->GetInteractComp()->HitItem);

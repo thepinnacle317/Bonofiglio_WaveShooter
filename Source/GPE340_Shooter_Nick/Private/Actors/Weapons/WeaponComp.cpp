@@ -9,7 +9,6 @@
 #include "Character/Nick_ShooterCharacter.h"
 #include "Character/ShooterCharacterComp.h"
 #include "EnemyAI/EnemyBase.h"
-#include "Interfaces/ProjectileImpactInterface.h"
 
 
 UWeaponComp::UWeaponComp() :
@@ -42,6 +41,7 @@ void UWeaponComp::BeginPlay()
 	WeaponTraceDelegate.BindUObject(this, &UWeaponComp::WeaponTrace);
 
 	bInitialized = false;
+
 }
 
 void UWeaponComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -244,6 +244,8 @@ void UWeaponComp::FireWeapon()
 			DecrementAmmo();
 			// Reset the character state from firing 
 			OwningShooterCharacter->GetShooterComp()->CharacterState = ECharacterState::ECS_Unoccupied;
+
+			if (!OwningShooterCharacter->GetInventoryComp()->HasAmmoInGun()) ReloadWeapon();
 		}
 	}
 }

@@ -7,6 +7,8 @@
 #include "Interfaces/ProjectileImpactInterface.h"
 #include "EnemyBase.generated.h"
 
+class AEnemyAIController;
+class UBehaviorTree;
 class UAttributeComponent;
 
 UCLASS()
@@ -20,6 +22,8 @@ public:
 	virtual void ProjectileHit_Implementation(FHitResult HitResult) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	virtual void PossessedBy(AController* NewController) override;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -31,6 +35,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USoundBase> ImpactSFX;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components")
+	TObjectPtr<AEnemyAIController> EnemyAIController;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAttributeComponent> AttributeComponent;
@@ -38,6 +45,9 @@ private:
 	/* Name of the bone to apply critical hit damage to */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
 	FString CritHitBone;
+
+	UPROPERTY(EditAnywhere, Category="Core Components")
+	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
 
 public:
 	FORCEINLINE TObjectPtr<UAttributeComponent> GetAttributeComp() const { return AttributeComponent; }

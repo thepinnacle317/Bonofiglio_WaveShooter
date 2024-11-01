@@ -63,6 +63,9 @@ public:
 
 	void ReloadPressed();
 
+	/* Spawns the starter weapon for the character at start */
+	AWeapon_Base* SpawnDefaultWeapon();
+
 	/* Used for retrieving generic data that is need to access the anim instance */
 	TObjectPtr<ANick_ShooterCharacter> OwningCharacter;
 
@@ -137,19 +140,13 @@ public:
 	/* Used to determine the state of the character for performing actions */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Shooter Core | Combat Properties | States")
 	ECharacterState CharacterState;
-
-
+	
 	/* Crosshair Hit Results */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Shooter Core | Combat Properties | Hit Results")
 	FHitResult ScreenTraceHit;
 
-
-
 protected:
 	virtual void BeginPlay() override;
-	
-	/* Spawns the starter weapon for the character at start */
-	AWeapon_Base* SpawnDefaultWeapon();
 
 private:
 	/* Location of the bullet vapor particle endpoint */
@@ -192,5 +189,6 @@ public:
 	FORCEINLINE bool GetbShouldFire() const { return bShouldFire; }
 	FORCEINLINE void SetbShouldFire(bool ShouldFire) { bShouldFire = ShouldFire; }
 	FORCEINLINE AWeapon_Base* GetCurrentWeapon() { return CurrentWeapon; }
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 		
 };

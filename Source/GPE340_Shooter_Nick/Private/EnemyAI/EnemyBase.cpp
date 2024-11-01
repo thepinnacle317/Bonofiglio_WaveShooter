@@ -3,7 +3,10 @@
 
 #include "EnemyAI/EnemyBase.h"
 
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Character/AttributeComponent.h"
+#include "EnemyAI/EnemyAIController.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -57,5 +60,18 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	}
 	
 	return DamageAmount;
+}
+
+void AEnemyBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	EnemyAIController = Cast<AEnemyAIController>(NewController);
+
+	 if (EnemyBehaviorTree)
+	 {
+	 	EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*EnemyBehaviorTree->BlackboardAsset);
+	 	EnemyAIController->RunBehaviorTree(EnemyBehaviorTree);
+	 }
 }
 
