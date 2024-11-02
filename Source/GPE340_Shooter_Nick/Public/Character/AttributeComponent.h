@@ -15,7 +15,6 @@ class GPE340_SHOOTER_NICK_API UAttributeComponent : public UActorComponent
 public:	
 	UAttributeComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void Die();
 
 protected:
 	virtual void BeginPlay() override;

@@ -7,9 +7,13 @@
 #include "Interfaces/ProjectileImpactInterface.h"
 #include "EnemyBase.generated.h"
 
+class AAIController;
+/* Forward Declarations */
 class AEnemyAIController;
 class UBehaviorTree;
 class UAttributeComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathDelegate);
 
 UCLASS()
 class GPE340_SHOOTER_NICK_API AEnemyBase : public ACharacter, public IProjectileImpactInterface
@@ -23,6 +27,14 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void PossessedBy(AController* NewController) override;
+
+	// Event broadcast when the enemy dies
+	UPROPERTY(BlueprintAssignable, Category="Events")
+	FOnDeathDelegate OnDeath;
+
+	// Use a clear and unique name for the AI controller class
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	TSubclassOf<AAIController> EnemyAIControllerClass;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -48,6 +60,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Core Components")
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
+
+	// Used to handle the enemy when they have no more health left
+	void HandleEnemyDeath();
 
 public:
 	FORCEINLINE TObjectPtr<UAttributeComponent> GetAttributeComp() const { return AttributeComponent; }

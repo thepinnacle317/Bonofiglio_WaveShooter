@@ -98,7 +98,7 @@ float ANick_ShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const&
 		{
 			// Could be swapped for a clamp
 			GetAttributeComp()->SetHealth(0.f);
-			GetAttributeComp()->Die();
+			// TODO: Handle Death
 		}
 		else
 		{

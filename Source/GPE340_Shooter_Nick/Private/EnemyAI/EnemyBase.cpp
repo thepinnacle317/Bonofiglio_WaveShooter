@@ -2,7 +2,6 @@
 
 
 #include "EnemyAI/EnemyBase.h"
-
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/AttributeComponent.h"
@@ -23,6 +22,18 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+}
+
+void AEnemyBase::HandleEnemyDeath()
+{
+	if (OnDeath.IsBound())
+	{
+		// Broadcast the delegate so the listener in the wave manager can track that it will need to spawn more if available from the count.
+		OnDeath.Broadcast();
+	}
+	// TODO: Handle other things to happen when the enemy dies
+
+	Destroy();
 }
 
 void AEnemyBase::Tick(float DeltaTime)
@@ -51,7 +62,9 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 		{
 			// Could be swapped for a clamp
 			GetAttributeComp()->SetHealth(0.f);
-			GetAttributeComp()->Die();
+			
+			// Kill the enemy.  This will also destroy the actor after all effects have been played.
+			HandleEnemyDeath();
 		}
 		else
 		{
