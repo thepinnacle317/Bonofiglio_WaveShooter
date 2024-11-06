@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "EnemyWaveManager.generated.h"
 
+class UWaveShooterGameInstance;
 class AEnemySpawner;
 
 UCLASS()
@@ -33,8 +34,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
 	int32 InitialSpawnAmount;
 
-	
+	/* Used to determine how far to find spawners in range of the player */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
+	float SpawnerRange;
 
+	/* Used to determine how far to find spawners in range of the player */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
+	float FallbackSpawnerRange;
+
+	/* */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
+	int32 RemainingEnemies;
+	
 	/* Used to start the next wave of enemies */
 	void StartNextWave();
 
@@ -45,7 +56,12 @@ protected:
 	void CheckWaveCompletion();
 
 private:
+
+	/* Used to hold and use the current waves data */
 	FWaveData CurrentWaveData;
+
+	/* Reference to the Wave Shooter Game Instance */
+	TObjectPtr<UWaveShooterGameInstance> WaveGameInstance;
 
 	/* Timer handle used to manage the wave timer */
 	FTimerHandle WaveTimerHandle;
@@ -62,14 +78,22 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Wave Manager | Wave Data", meta = (AllowPrivateAccess = "true"))
 	int32 RemainingEnemiesToSpawn;
 
+	/* */
 	void StartWave(int32 WaveIndex);
-	
+
+	/* */
 	void SpawnInitialEnemies(const FWaveData& WaveData);
-	
+
+	/* */
 	void CheckThenSpawnEnemies();
-	
+
+	/* Used to find spawners that are within range of the player to use to spawn the enemy from */
+	TArray<AEnemySpawner*> GetSpawnersInRange(float Range);
+
+	/* */
 	UFUNCTION()
 	void OnEnemyDeath();
-	
+
+	/* */
 	void OnWaveEnd();
 };

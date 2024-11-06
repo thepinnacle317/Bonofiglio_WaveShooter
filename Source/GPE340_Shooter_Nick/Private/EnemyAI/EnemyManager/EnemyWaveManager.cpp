@@ -2,9 +2,10 @@
 
 
 #include "EnemyAI/EnemyManager/EnemyWaveManager.h"
-
 #include "EnemyAI/EnemyBase.h"
 #include "EnemyAI/EnemyManager/EnemySpawner.h"
+#include "GameCore/WaveShooterGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyWaveManager::AEnemyWaveManager() :
@@ -12,18 +13,39 @@ AEnemyWaveManager::AEnemyWaveManager() :
 EnemyAliveThreshold(0),
 InitialSpawnAmount(0),
 AliveEnemyCount(0),
-CurrentWaveIndex(0)
+CurrentWaveIndex(0),
+RemainingEnemiesToSpawn(0),
+SpawnerRange(2000.f),
+FallbackSpawnerRange(5000.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
 	AliveEnemyCount = 0;
 }
 
+void AEnemyWaveManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	WaveGameInstance = Cast<UWaveShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!WaveGameInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("WaveGameInstance is null. Make sure the game instance is set in the project settings."));
+		return;
+	}
+	
+	// Start the first wave on begin with its delay
+	StartNextWave();
+}
+
 void AEnemyWaveManager::StartNextWave()
 {
-	if (WaveDataTable)
+	if (WaveDataTable && WaveGameInstance)
 	{
+		// Get the wave number from the Game Instance
+		CurrentWaveIndex = WaveGameInstance->GetWaveNumber();
+		
 		// Get the row name based on the wave index.  *** Rows must be named "Wave1, Wave2, ... etc.
-		FName RowName = FName(*FString::Printf(TEXT("Wave%d"), CurrentWaveIndex + 1));
+		FName RowName = FName(*FString::Printf(TEXT("Wave%d"), CurrentWaveIndex));
 		// Get the row name
 		FWaveData* WaveData = WaveDataTable->FindRow<FWaveData>(RowName, TEXT(""));
 
@@ -33,16 +55,15 @@ void AEnemyWaveManager::StartNextWave()
 			float Delay = WaveData->WaveDelay;
 			GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, FTimerDelegate::CreateUObject(this,
 				&AEnemyWaveManager::StartWave, CurrentWaveIndex), Delay, false);
+
+			// Increment the CurrentWaveIndex for the next wave
+			WaveGameInstance->IncrementWaveNumber();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Wave data not found for Wave%d"), CurrentWaveIndex);
 		}
 	}
-}
-
-void AEnemyWaveManager::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	// Start the first wave on begin with its delay
-	StartNextWave();
 }
 
 void AEnemyWaveManager::CheckWaveCompletion()
@@ -59,7 +80,7 @@ void AEnemyWaveManager::StartWave(int32 WaveIndex)
 	if (WaveDataTable)
 	{
 		// Construct the row name based on the wave index (e.g., Wave1, Wave2, ...)
-		FName RowName = FName(*FString::Printf(TEXT("Wave%d"), WaveIndex + 1));
+		FName RowName = FName(*FString::Printf(TEXT("Wave%d"), WaveIndex));
         
 		// Retrieve the wave data from the data table
 		FWaveData* WaveData = WaveDataTable->FindRow<FWaveData>(RowName, TEXT(""));
@@ -86,15 +107,15 @@ void AEnemyWaveManager::StartWave(int32 WaveIndex)
 			SpawnInitialEnemies(CurrentWaveData);
 		}
 	}
-
-	// Increment the CurrentWaveIndex for the next wave
-	CurrentWaveIndex++;
 }
 
 void AEnemyWaveManager::SpawnInitialEnemies(const FWaveData& WaveData)
 {
+	// Get the spawners that are within range of the player
+	TArray<AEnemySpawner*> SpawnersNearby = GetSpawnersInRange(SpawnerRange);
+	
 	// Initialize the count of remaining enemies based on the initial spawn amount
-	int32 RemainingEnemies = FMath::Min(InitialSpawnAmount, RemainingEnemiesToSpawn);
+	RemainingEnemies = FMath::Min(InitialSpawnAmount, RemainingEnemiesToSpawn);
 
 	// Iterate through the enemy types defined in the wave data
 	for (const FEnemyTypeData& EnemyTypeData : WaveData.Enemies)
@@ -111,11 +132,11 @@ void AEnemyWaveManager::SpawnInitialEnemies(const FWaveData& WaveData)
 			if (EnemySpawners.Num() > 0)
 			{
 				// Cycle through spawners to distribute enemy spawns
-				AEnemySpawner* Spawner = EnemySpawners[i % EnemySpawners.Num()];
+				AEnemySpawner* Spawner = SpawnersNearby[i % SpawnersNearby.Num()];
+				
 				// Spawn the enemy using the spawner
 				Spawner->SpawnEnemy(EnemyClass);
 				
-
 				// Increment the alive enemy count
 				AliveEnemyCount++;
 
@@ -146,6 +167,9 @@ void AEnemyWaveManager::CheckThenSpawnEnemies()
 	// Check if there are remaining enemies to spawn and if the alive enemy count is below the threshold
 	if (RemainingEnemiesToSpawn > 0 && AliveEnemyCount < EnemyAliveThreshold)
 	{
+		// Get the spawners that are within range of the player
+		TArray<AEnemySpawner*> SpawnersNearby = GetSpawnersInRange(SpawnerRange);
+		
 		// Iterate through enemy types to spawn based on the current wave data
 		for (const FEnemyTypeData& EnemyTypeData : CurrentWaveData.Enemies)
 		{
@@ -158,7 +182,7 @@ void AEnemyWaveManager::CheckThenSpawnEnemies()
 			for (int32 i = 0; i < SpawnCount; i++)
 			{
 				// Get a spawner and spawn the enemy
-				AEnemySpawner* Spawner = EnemySpawners[i % EnemySpawners.Num()];
+				AEnemySpawner* Spawner = SpawnersNearby[i % SpawnersNearby.Num()];
 				Spawner->SpawnEnemy(EnemyTypeData.EnemyClass);
                 
 				// Increment the count of alive enemies as they spawn
@@ -180,6 +204,41 @@ void AEnemyWaveManager::CheckThenSpawnEnemies()
 			if (AliveEnemyCount >= EnemyAliveThreshold) break;
 		}
 	}
+}
+
+TArray<AEnemySpawner*> AEnemyWaveManager::GetSpawnersInRange(float Range)
+{
+	TArray<AEnemySpawner*> SpawnersNearPlayer;
+
+	// Get the location of the player to use as the point to search from
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (!PlayerCharacter) return SpawnersNearPlayer;
+
+	// Get the players current location
+	FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+
+	// Iterate through all the spawners and check if they are within the range threshold of the player
+	// to be used to spawn an enemy at
+	for (AEnemySpawner* Spawner : EnemySpawners)
+	{
+		if (Spawner && FVector::Dist(PlayerLocation, Spawner->GetActorLocation()) <= Range)
+		{
+			// Add the spawner that passed the check to the local spawner array
+			SpawnersNearPlayer.Add(Spawner);
+		}
+	}
+
+	// If there are no spawners near the player then return the full list of spawners
+	if (SpawnersNearPlayer.Num() == 0)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Red, TEXT("No spawners within defined range! Returning full list"));
+		}
+		return EnemySpawners;
+	}
+
+	return SpawnersNearPlayer;
 }
 
 void AEnemyWaveManager::OnEnemyDeath()
