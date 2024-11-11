@@ -250,7 +250,6 @@ void AEnemyWaveManager::OnEnemyDeath()
 	
 	// Spawn more enemies if available 
 	CheckThenSpawnEnemies();
-	
 }
 
 void AEnemyWaveManager::OnWaveEnd()

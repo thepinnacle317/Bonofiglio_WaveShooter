@@ -42,7 +42,7 @@ void AEnemySpawner::SpawnEnemy_Implementation(TSubclassOf<AEnemyBase> EnemyClass
 			}
 			
 			// This is left here to optionally add enemy behavior upon spawn.  Not Implemented.
-			//LastSpawnedEnemy->ActivateEnemy();
+			// LastSpawnedEnemy->ActivateEnemy();
 		}
 	}
 }

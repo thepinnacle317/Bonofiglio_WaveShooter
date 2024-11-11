@@ -73,6 +73,10 @@ private:
 	TObjectPtr<UInputAction> ReloadAction;
 	UPROPERTY(EditAnywhere, Category="Input | Actions")
 	TObjectPtr<UInputAction> CycleWeaponAction;
+	UPROPERTY(EditAnywhere, Category="Input | Actions")
+	TObjectPtr<UInputAction> SprintAction;
+	UPROPERTY(EditAnywhere, Category="Input | Actions")
+	TObjectPtr<UInputAction> PauseMenuAction;
 
 	/* Movement */
 	void Move(const FInputActionValue& InputActionValue);
@@ -82,6 +86,8 @@ private:
 	void JumpEnd();
 	void Dodge();
 	FName GetDirectionalDodgeSection();
+	void SprintingInputPressed();
+	void SprintingInputReleased();
 
 	/* Gameplay Actions */
 	void Firing();
@@ -91,6 +97,7 @@ private:
 	void Interact();
 	void DropHeldItem();
 	void ReloadWeapon();
+	void PauseGame();
 
 	/* Main Hud Overlay Class *** Set in blueprints */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
@@ -99,4 +106,6 @@ private:
 	/* Variable for the Main Overlay Widget */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUserWidget> MainOverlay;
+
+	bool PauseToggled;
 };

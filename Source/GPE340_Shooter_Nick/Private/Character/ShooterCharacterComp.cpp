@@ -4,12 +4,14 @@
 #include "Character/ShooterCharacterComp.h"
 #include "Actors/Weapons/WeaponComp.h"
 #include "Actors/Weapons/Weapon_Base.h"
+#include "Character/AttributeComponent.h"
 #include "Character/InteractionComponent.h"
 #include "Character/InventoryComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameCore/Nick_ShooterPlayerController.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interfaces/ProjectileImpactInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -34,7 +36,9 @@ UShooterCharacterComp::UShooterCharacterComp() :
 	// Gun Input Variables
 	bFireButtonDown(false),
 	bShouldFire(true),
-	CharacterState(ECharacterState::ECS_Unoccupied)
+	CharacterState(ECharacterState::ECS_Unoccupied),
+	SprintSpeed(1000.f),
+	bIsSprinting(false)
 	
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -130,6 +134,24 @@ AWeapon_Base* UShooterCharacterComp::SpawnDefaultWeapon()
 		return GetWorld()->SpawnActor<AWeapon_Base>(DefaultWeaponClass);
 	}
 	return nullptr;
+}
+
+void UShooterCharacterComp::StartSprinting()
+{
+	/* Make sure the player has stamina left to use */
+	if (OwningCharacter->GetAttributeComp()->GetStamina() > 0.f)
+	{
+		/* Set sprinting to true and change the characters movement speed */
+		bIsSprinting = true;
+		OwningCharacter->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	}
+}
+
+void UShooterCharacterComp::StopSprinting()
+{
+	/* Set sprinting to false and return the player to default movement speed when not sprinting */
+	bIsSprinting = false;
+	OwningCharacter->GetCharacterMovement()->MaxWalkSpeed = DefaultCharacterSpeed;
 }
 
 void UShooterCharacterComp::EquipWeapon(AWeapon_Base* WeaponToBeEquipped)

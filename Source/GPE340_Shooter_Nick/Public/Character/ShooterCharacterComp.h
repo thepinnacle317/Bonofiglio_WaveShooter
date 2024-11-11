@@ -66,7 +66,11 @@ public:
 	/* Spawns the starter weapon for the character at start */
 	AWeapon_Base* SpawnDefaultWeapon();
 
+	void StartSprinting();
+	void StopSprinting();
+
 	/* Used for retrieving generic data that is need to access the anim instance */
+	UPROPERTY()
 	TObjectPtr<ANick_ShooterCharacter> OwningCharacter;
 
 	/* * * Delegate Handles * * */
@@ -112,6 +116,13 @@ public:
 	/* Movement Speed When Aiming */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shooter Core | Movement | Speed")
 	float AimingCharacterSpeed;
+
+	/* Movement Speed used for sprinting */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter Core | Movement | Speed")
+	float SprintSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter Core | Movement | Speed")
+	bool bIsSprinting;
 
 	/* The Default Look Speed */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Shooter Core | Movement | Aiming")
@@ -177,6 +188,8 @@ private:
 	/* Used to set the default weapon the player will start with */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter Core", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AWeapon_Base> DefaultWeaponClass;
+
+	
 
 public:
 	/* The compiler will ultimately determine if these getters will be Inline or not */

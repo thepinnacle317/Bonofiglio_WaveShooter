@@ -31,6 +31,12 @@ void AEnemyBase::HandleEnemyDeath()
 		// Broadcast the delegate so the listener in the wave manager can track that it will need to spawn more if available from the count.
 		OnDeath.Broadcast();
 	}
+	
+	// Spawn Death particles.
+	UGameplayStatics::SpawnEmitterAtLocation(this, DeathParticles, GetActorLocation());
+
+	// Drop Scrap loot actor
+	
 	// TODO: Handle other things to happen when the enemy dies
 
 	Destroy();

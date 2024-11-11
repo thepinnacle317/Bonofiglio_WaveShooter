@@ -25,6 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	
 	/* Reference used to track the last spawned enemy */
 	UPROPERTY()
 	TObjectPtr<AEnemyBase> LastSpawnedEnemy;

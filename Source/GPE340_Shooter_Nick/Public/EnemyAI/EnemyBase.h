@@ -7,11 +7,11 @@
 #include "Interfaces/ProjectileImpactInterface.h"
 #include "EnemyBase.generated.h"
 
-class AAIController;
 /* Forward Declarations */
 class AEnemyAIController;
 class UBehaviorTree;
 class UAttributeComponent;
+class AAIController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathDelegate);
 
@@ -63,6 +63,9 @@ private:
 
 	// Used to handle the enemy when they have no more health left
 	void HandleEnemyDeath();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem> DeathParticles;
 
 public:
 	FORCEINLINE TObjectPtr<UAttributeComponent> GetAttributeComp() const { return AttributeComponent; }

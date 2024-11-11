@@ -8,8 +8,10 @@
 #include "Character/InventoryComponent.h"
 #include "Character/ShooterCharacterComp.h"
 #include "GameCore/Nick_ShooterPlayerController.h"
+#include "GameCore/WaveShooterGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ANick_ShooterCharacter::ANick_ShooterCharacter()
@@ -56,7 +58,7 @@ void ANick_ShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OnAiming.BindUObject(this, &ANick_ShooterCharacter::Aim);
+	OnAiming.AddDynamic(this, &ANick_ShooterCharacter::Aim);
 	
 	/* Set the Camera FOV to the value assigned in the shooter Comp */
 	FollowCamera->FieldOfView = ShooterCharacterComp->DefaultCameraFOV;
@@ -71,6 +73,13 @@ void ANick_ShooterCharacter::PossessedBy(AController* NewController)
 
 	// Set the owning controller to be used for binding delegates.
 	OwningController = Cast<ANick_ShooterPlayerController>(NewController);
+
+	/* Set the Game State to In Game */
+	AWaveShooterGameStateBase* GameStateBase = Cast<AWaveShooterGameStateBase>(GetWorld()->GetGameState());
+	if (GameStateBase)
+	{
+		GameStateBase->CurrentGameState = EGameStates::EGS_InGame;
+	}
 }
 
 void ANick_ShooterCharacter::Tick(float DeltaTime)
@@ -98,7 +107,7 @@ float ANick_ShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const&
 		{
 			// Could be swapped for a clamp
 			GetAttributeComp()->SetHealth(0.f);
-			// TODO: Handle Death
+			HandlePlayerDeath();
 		}
 		else
 		{
@@ -130,5 +139,29 @@ void ANick_ShooterCharacter::InterpolateCameraFOV(float DeltaTime)
 	}
 	/* Set the Cameras FOV Value */
 	GetFollowCamera()->SetFieldOfView(ShooterCharacterComp->GetCurrentCameraFOV());
+}
+
+void ANick_ShooterCharacter::HandlePlayerDeath()
+{
+	// TODO: Handle enemy death animation here
+	
+	// Play death sound
+	//UGameplayStatics::SpawnSoundAtLocation();
+	// Play particle effect
+	//UGameplayStatics::SpawnEmitterAtLocation();
+
+	/* Set the Game State to Game Over */
+	AWaveShooterGameStateBase* GameStateBase = Cast<AWaveShooterGameStateBase>(GetWorld()->GetGameState());
+	if (GameStateBase)
+	{
+		GameStateBase->CurrentGameState = EGameStates::EGS_GameOver;
+	}
+	
+	/* Broadcast message to listeners */
+	if (OnPlayerDeath.IsBound())
+	{
+		OnPlayerDeath.Broadcast();
+		// Execute any bound logic here		
+	}
 }
 

@@ -17,8 +17,12 @@ class UInteractionComponent;
 class UAttributeComponent;
 class ANick_ShooterPlayerController;
 
-DECLARE_DELEGATE(FFireDelegate);
-DECLARE_DELEGATE(FAimDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFireDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAimDelegate);
+//DECLARE_DELEGATE(FFireDelegate);
+//DECLARE_DELEGATE(FOnPlayerDeath);
+//DECLARE_DELEGATE(FAimDelegate);
 
 UCLASS()
 class GPE340_SHOOTER_NICK_API ANick_ShooterCharacter : public ACharacter, public IPickupInterface
@@ -33,6 +37,7 @@ public:
 	/* Delegate Handles */
 	FFireDelegate OnFiredWeapon;
 	FAimDelegate OnAiming;
+	FOnPlayerDeath OnPlayerDeath;
 
 	FVector GetTargetInterpLocation();
 
@@ -44,11 +49,15 @@ protected:
 
 	virtual void PossessedBy(AController* NewController) override;
 
+	UFUNCTION()
 	void Aim();
 
 	void InterpolateCameraFOV(float DeltaTime);
 
 private:
+
+	UFUNCTION()
+	void HandlePlayerDeath();
 
 	/* Camera boom used to position the camera behind the camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))

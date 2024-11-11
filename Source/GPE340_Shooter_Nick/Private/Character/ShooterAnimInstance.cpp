@@ -51,6 +51,8 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		{
 			bReloading = false;
 		}
+
+		bSprinting = ShooterCharacter->GetShooterComp()->bIsSprinting;
 		
 		// Get the lateral speed of the character from their velocity
 		FVector Velocity{ ShooterCharacter->GetVelocity() };

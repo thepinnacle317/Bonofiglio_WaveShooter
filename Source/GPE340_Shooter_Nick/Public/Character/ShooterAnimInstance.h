@@ -123,4 +123,10 @@ private:
 	/* Used to define the classification of the equipped weapon */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Combat | Weapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponClassification WeaponClassification;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	bool bSprinting;
+
+public:
+	FORCEINLINE float GetSpeed() const { return Speed; }
 };

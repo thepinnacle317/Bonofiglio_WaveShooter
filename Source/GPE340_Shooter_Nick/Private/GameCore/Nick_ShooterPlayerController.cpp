@@ -10,7 +10,10 @@
 #include "Character/InteractionComponent.h"
 #include "Character/Nick_ShooterCharacter.h"
 #include "Character/ShooterCharacterComp.h"
+#include "GameCore/Nick_ShooterGameModeBase.h"
+#include "GameCore/WaveShooterGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void ANick_ShooterPlayerController::BeginPlay()
@@ -43,20 +46,44 @@ void ANick_ShooterPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 	UEnhancedInputComponent* ShooterInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 	//UE_LOG(LogTemp, Warning, TEXT("Input Component Setup."));
+	/* Movement Input Actions */
 	ShooterInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 	ShooterInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ThisClass::MoveCompleted);
+	
+	/* Looking Input Actions*/
 	ShooterInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+	
+	/* Jumping Input Actions */
 	ShooterInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::JumpStarted);
 	ShooterInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::JumpEnd);
+	
+	/* Shooting Input Actions */
 	ShooterInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ThisClass::Firing);
 	ShooterInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ThisClass::NotFiring);
+	
+	/* Aiming Input Actions*/
 	ShooterInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &ThisClass::AimStarted);
 	ShooterInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ThisClass::AimCompleted);
+	
+	/* Dodge Input Actions */
 	ShooterInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &ThisClass::Dodge);
 	ShooterInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &ThisClass::MoveCompleted);
+	
+	/* Drop Item Input Actions */
 	ShooterInputComponent->BindAction(DropItemAction, ETriggerEvent::Started, this, &ThisClass::DropHeldItem);
+	
+	/* Interaction Input Actions */
 	ShooterInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
+	
+	/* Reload Input Actions */
 	ShooterInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::ReloadWeapon);
+	
+	/* Sprinting Input Actions */
+	ShooterInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::SprintingInputPressed);
+	ShooterInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::SprintingInputReleased);
+
+	/* Pause Menu Actions */
+	ShooterInputComponent->BindAction(PauseMenuAction, ETriggerEvent::Started, this, &ThisClass::PauseGame);
 
 }
 
@@ -170,6 +197,16 @@ FName ANick_ShooterPlayerController::GetDirectionalDodgeSection()
 	return MontageSection;
 }
 
+void ANick_ShooterPlayerController::SprintingInputPressed()
+{
+	PossessedCharacter->GetShooterComp()->StartSprinting();
+}
+
+void ANick_ShooterPlayerController::SprintingInputReleased()
+{
+	PossessedCharacter->GetShooterComp()->StopSprinting();
+}
+
 void ANick_ShooterPlayerController::Firing()
 {
 	PossessedCharacter->GetShooterComp()->FirePressed();
@@ -190,7 +227,7 @@ void ANick_ShooterPlayerController::AimStarted()
 
 	/* Delegate is used here to make a call so that we handle all the animation and camera work in the
 	 * character method and not pollute the controller */
-	PossessedCharacter->OnAiming.Execute();
+	PossessedCharacter->OnAiming.Broadcast();
 	
 	//UE_LOG(LogTemp, Warning, TEXT("Aiming"));
 }
@@ -227,4 +264,39 @@ void ANick_ShooterPlayerController::DropHeldItem()
 void ANick_ShooterPlayerController::ReloadWeapon()
 {
 	PossessedCharacter->GetShooterComp()->ReloadPressed();
+}
+
+void ANick_ShooterPlayerController::PauseGame()
+{
+	UWorld* World = GetWorld();
+	if (!PauseToggled)
+	{
+		if (World)
+		{
+			UGameplayStatics::SetGamePaused(World,true);
+			PauseToggled = true;
+			
+			/* Set the Game State to Paused */
+			AWaveShooterGameStateBase* GameStateBase = Cast<AWaveShooterGameStateBase>(GetWorld()->GetGameState());
+			if (GameStateBase)
+			{
+				GameStateBase->CurrentGameState = EGameStates::EGS_PauseGame;
+			}
+		}
+	}
+	else
+	{
+		if (World)
+		{
+			UGameplayStatics::SetGamePaused(World,false);
+			PauseToggled = false;
+
+			/* Set the Game State to UnPaused */
+			AWaveShooterGameStateBase* GameStateBase = Cast<AWaveShooterGameStateBase>(GetWorld()->GetGameState());
+			if (GameStateBase)
+			{
+				GameStateBase->CurrentGameState = EGameStates::EGS_InGame;
+			}
+		}
+	}
 }
