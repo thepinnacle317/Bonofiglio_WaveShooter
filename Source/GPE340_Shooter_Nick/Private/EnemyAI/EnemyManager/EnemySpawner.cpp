@@ -15,17 +15,26 @@ AEnemySpawner::AEnemySpawner()
 
 void AEnemySpawner::SpawnEnemy_Implementation(TSubclassOf<AEnemyBase> EnemyClass)
 {
-	if (EnemyClass)
-	{
-		// Set up the spawn parameters 
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = this;
-		
-		// Spawn the enemy
-		LastSpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(EnemyClass, GetActorLocation(), GetActorRotation(), SpawnParameters);
+	if (!EnemyClass) return;
 
-		if (LastSpawnedEnemy)
+	for (int32 Attempt = 0; Attempt < MaxSpawnAttempts; Attempt++)
+	{
+		FVector SpawnLocation = GetActorLocation();
+		if (Attempt > 0)
 		{
+			SpawnLocation += FVector(FMath::RandRange(-SpawnRadius, SpawnRadius),
+									  FMath::RandRange(-SpawnRadius, SpawnRadius), 0.0f);
+		}
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(EnemyClass, SpawnLocation, GetActorRotation(), SpawnParams);
+		if (SpawnedEnemy)
+		{
+			LastSpawnedEnemy = SpawnedEnemy;
+
 			// Retrieve the AI controller class from the enemy's defaults
 			TSubclassOf<AAIController> EnemyAIControllerClass = LastSpawnedEnemy->EnemyAIControllerClass;
 
@@ -40,16 +49,29 @@ void AEnemySpawner::SpawnEnemy_Implementation(TSubclassOf<AEnemyBase> EnemyClass
 					AIController->Possess(LastSpawnedEnemy);
 				}
 			}
-			
-			// This is left here to optionally add enemy behavior upon spawn.  Not Implemented.
-			// LastSpawnedEnemy->ActivateEnemy();
+
+			UE_LOG(LogTemp, Warning, TEXT("Successfully spawned enemy at location: %s"), *SpawnLocation.ToString());
+			return;
 		}
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Failed to spawn enemy after %d attempts at spawner: %s"), MaxSpawnAttempts, *GetName());
 }
 
 TObjectPtr<AEnemyBase> AEnemySpawner::GetLastSpawnedEnemy() const
 {
 	return LastSpawnedEnemy;
+}
+
+void AEnemySpawner::SpawnEnemiesWithDelay(TSubclassOf<AEnemyBase> EnemyClass, float SpawnDelay)
+{
+	if (!EnemyClass) return;
+
+	FTimerHandle SpawnTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, FTimerDelegate::CreateLambda([this, EnemyClass]()
+	{
+		SpawnEnemy(EnemyClass);
+	}), SpawnDelay, false);
 }
 
 void AEnemySpawner::BeginPlay()

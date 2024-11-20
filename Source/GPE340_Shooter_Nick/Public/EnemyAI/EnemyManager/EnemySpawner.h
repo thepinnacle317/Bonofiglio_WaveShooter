@@ -16,10 +16,20 @@ class GPE340_SHOOTER_NICK_API AEnemySpawner : public AActor
 public:	
 	AEnemySpawner();
 
-	UFUNCTION(BlueprintNativeEvent, Category="Enemy Spawner")
+	UFUNCTION(BlueprintNativeEvent, Category="Enemy Spawner | Functions")
 	void SpawnEnemy(TSubclassOf<AEnemyBase> EnemyClass);
 
 	TObjectPtr<AEnemyBase> GetLastSpawnedEnemy() const;
+
+	// Maximum number of attempts to find a valid spawn location
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Spawner | Spawn Properties")
+	float SpawnRadius = 100.0f;
+	
+	// Radius around the initial location to attempt alternate spawns
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Spawner | Spawn Properties")
+	int32 MaxSpawnAttempts = 5;
+
+	void SpawnEnemiesWithDelay(TSubclassOf<AEnemyBase> EnemyClass, float SpawnDelay);
 
 protected:
 	virtual void BeginPlay() override;
