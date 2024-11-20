@@ -56,7 +56,5 @@ public:
 	FORCEINLINE void SetHealth(float Value) { CurrentHealth = Value; }
 	FORCEINLINE void SetStamina(float Value) { CurrentStamina = Value; }
 	FORCEINLINE void SetMaxHealth(float Value) { MaxHealth = Value; }
-	FORCEINLINE void SetMaxStamina(float Value) { MaxStamina = Value; }
-
-		
+	FORCEINLINE void SetMaxStamina(float Value) { MaxStamina = Value; }	
 };

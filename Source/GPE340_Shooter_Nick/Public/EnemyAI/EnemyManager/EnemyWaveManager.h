@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "EnemyWaveManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWaveEnded);
+
+/* Forward Declarations */
 class UWaveShooterGameInstance;
 class AEnemySpawner;
 
@@ -18,6 +21,9 @@ class GPE340_SHOOTER_NICK_API AEnemyWaveManager : public AActor
 public:	
 	AEnemyWaveManager();
 
+	UPROPERTY(BlueprintAssignable)
+	FOnWaveEnded WaveEnded;
+
 	/* */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Data Core")
 	TObjectPtr<UDataTable> WaveDataTable;
@@ -26,11 +32,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawners")
 	TArray<AEnemySpawner*> EnemySpawners;
 
-	/* Handles How many enemies can be alive at any given time.  Used to control pacing and difficulty*/
+	/* Handles How many enemies can be alive at any given time.  Used to control pacing and difficulty *** This is set by WaveData */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
 	int32 EnemyAliveThreshold;
 
-	/* The initial amount of enemies to spawn at the start of a wave */
+	/* The initial amount of enemies to spawn at the start of a wave *** This is set by WaveData */
+	// TODO: Tie this to the WaveData Struct and set per wave 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
 	int32 InitialSpawnAmount;
 
@@ -43,8 +50,8 @@ public:
 	float FallbackSpawnerRange;
 
 	/* */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wave Manager | Spawn Control")
-	int32 RemainingEnemies;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Wave Manager | Spawn Control")
+	int32 TotalEnemiesToSpawn;
 	
 	/* Used to start the next wave of enemies */
 	void StartNextWave();

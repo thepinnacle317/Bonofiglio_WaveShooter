@@ -72,6 +72,7 @@ void AEnemyWaveManager::CheckWaveCompletion()
 	{
 		// Handles Starting the next wave
 		OnWaveEnd();
+		
 	}
 }
 
@@ -111,55 +112,52 @@ void AEnemyWaveManager::StartWave(int32 WaveIndex)
 
 void AEnemyWaveManager::SpawnInitialEnemies(const FWaveData& WaveData)
 {
-	// Get the spawners that are within range of the player
-	TArray<AEnemySpawner*> SpawnersNearby = GetSpawnersInRange(SpawnerRange);
-	
-	// Initialize the count of remaining enemies based on the initial spawn amount
-	RemainingEnemies = FMath::Min(InitialSpawnAmount, RemainingEnemiesToSpawn);
+	// Check if there are remaining enemies to spawn and if the alive enemy count is below the threshold
+    if (RemainingEnemiesToSpawn > 0 && AliveEnemyCount < EnemyAliveThreshold)
+    {
+        // Get the spawners that are within range of the player
+        TArray<AEnemySpawner*> SpawnersNearby = GetSpawnersInRange(SpawnerRange);
+        if (SpawnersNearby.Num() == 0)
+        {
+            // If no spawners nearby, use fallback spawners
+            SpawnersNearby = EnemySpawners;
+        }
 
-	// Iterate through the enemy types defined in the wave data
-	for (const FEnemyTypeData& EnemyTypeData : WaveData.Enemies)
-	{
-		// Get the enemy class to spawn
-		TSubclassOf<AEnemyBase> EnemyClass = EnemyTypeData.EnemyClass;
+        // Iterate through enemy types to spawn based on the current wave data
+        for (const FEnemyTypeData& EnemyTypeData : CurrentWaveData.Enemies)
+        {
+            // Calculate how many enemies of this type can be spawned based on the alive enemy threshold and remaining count
+            int32 SpawnableCount = FMath::Min(EnemyAliveThreshold - AliveEnemyCount, EnemyTypeData.EnemyCount);
 
-		// Calculate how many of this type to spawn based on the remaining enemies and defined count
-		int32 SpawnCount = FMath::Min(RemainingEnemies, EnemyTypeData.EnemyCount);
+            // Adjust SpawnCount based on remaining enemies to spawn
+            int32 SpawnCount = FMath::Min(SpawnableCount, RemainingEnemiesToSpawn);
 
-		for (int32 i = 0; i < SpawnCount; i++)
-		{
-			// Check if there are spawners available to use
-			if (EnemySpawners.Num() > 0)
-			{
-				// Cycle through spawners to distribute enemy spawns
-				AEnemySpawner* Spawner = SpawnersNearby[i % SpawnersNearby.Num()];
-				
-				// Spawn the enemy using the spawner
-				Spawner->SpawnEnemy(EnemyClass);
-				
-				// Increment the alive enemy count
-				AliveEnemyCount++;
+            for (int32 i = 0; i < SpawnCount; i++)
+            {
+                // Get a spawner and spawn the enemy
+                AEnemySpawner* Spawner = SpawnersNearby[i % SpawnersNearby.Num()];
+                Spawner->SpawnEnemy(EnemyTypeData.EnemyClass);
 
-				RemainingEnemiesToSpawn--;
+                // Increment the count of alive enemies as they spawn
+                AliveEnemyCount++;
+                RemainingEnemiesToSpawn--;
+                const_cast<FEnemyTypeData&>(EnemyTypeData).EnemyCount--; // Reduce this enemy type's count
 
-				// Decrement the remaining enemies
-				RemainingEnemies--;
+                // Bind the OnDeath delegate for the newly spawned enemy
+                AEnemyBase* LastEnemy = Spawner->GetLastSpawnedEnemy();
+                if (LastEnemy)
+                {
+                    LastEnemy->OnDeath.AddDynamic(this, &AEnemyWaveManager::OnEnemyDeath);
+                }
 
-				// Bind the OnDeath event to track when the enemy dies
-				AEnemyBase* LastEnemy = Spawner->GetLastSpawnedEnemy();
-				if (LastEnemy)
-				{
-					LastEnemy->OnDeath.AddDynamic(this, &AEnemyWaveManager::OnEnemyDeath);
-				}
-
-				// If we run out of remaining enemies, break out of the loop
-				if (RemainingEnemies <= 0) break;
-			}
-		}
-
-		// If we have already spawned the initial amount of enemies, exit the loop early
-		if (RemainingEnemies <= 0) break;
-	}
+                // If we reach the alive enemy threshold, stop spawning
+                if (AliveEnemyCount >= EnemyAliveThreshold)
+                {
+                    return; // Exit the function early, but keep remaining enemy counts intact
+                }
+            }
+        }
+    }
 }
 
 void AEnemyWaveManager::CheckThenSpawnEnemies()
@@ -256,4 +254,8 @@ void AEnemyWaveManager::OnWaveEnd()
 {
 	// Will handle the delay between wave and begin the next round.
 	StartNextWave();
+	if (WaveEnded.IsBound())
+	{
+		WaveEnded.Broadcast();
+	}
 }

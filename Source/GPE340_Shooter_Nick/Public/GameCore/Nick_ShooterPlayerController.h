@@ -107,5 +107,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUserWidget> MainOverlay;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
 	bool PauseToggled;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUserWidget> PauseWidget;
 };

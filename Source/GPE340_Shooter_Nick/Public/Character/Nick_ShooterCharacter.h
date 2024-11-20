@@ -34,6 +34,10 @@ public:
 	ANick_ShooterCharacter();
 	virtual void Tick(float DeltaTime) override;
 
+	/* Camera that follows the character */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera")
+	TObjectPtr<UCameraComponent> FollowCamera;
+
 	/* Delegate Handles */
 	FFireDelegate OnFiredWeapon;
 	FAimDelegate OnAiming;
@@ -60,12 +64,8 @@ private:
 	void HandlePlayerDeath();
 
 	/* Camera boom used to position the camera behind the camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
-
-	/* Camera that follows the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCameraComponent> FollowCamera;
 
 	/* Component that holds essential functionality to character gameplay */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components", meta = (AllowPrivateAccess = "true"))
