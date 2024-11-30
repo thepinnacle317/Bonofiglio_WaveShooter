@@ -10,7 +10,8 @@
 
 
 AEnemyBase::AEnemyBase() :
-CritHitBone("head")
+CritHitBone("head"),
+HealthBarDisplayTime(4.0f)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -22,6 +23,12 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+}
+
+void AEnemyBase::ShowHealthBar_Implementation()
+{
+	GetWorldTimerManager().ClearTimer(HealthBarTimerHandle);
+	GetWorldTimerManager().SetTimer(HealthBarTimerHandle, this, &AEnemyBase::HideHealthBar, HealthBarDisplayTime);
 }
 
 void AEnemyBase::HandleEnemyDeath()
@@ -51,12 +58,24 @@ void AEnemyBase::ProjectileHit_Implementation(FHitResult HitResult)
 {
 	if (ImpactSFX)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, GetActorLocation());
+		if (HitResult.BoneName.ToString() ==  CritHitBone)
+		{
+			// Play Critical Hit Sound
+			UGameplayStatics::PlaySoundAtLocation(this, CritHitSFX, GetActorLocation());
+		}
+		else
+		{
+			// Play Normal Hit Sound
+			UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, GetActorLocation());
+		}
 	}
+	
 	if (ImpactVFX)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, HitResult.Location, FRotator(0.f), true);
 	}
+	// Used to start the healthbar timer
+	ShowHealthBar();
 }
 
 float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,

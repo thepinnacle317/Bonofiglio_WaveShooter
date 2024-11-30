@@ -47,8 +47,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USoundBase> ImpactSFX;
 
+	/* Sound spawned when hit by the projectile */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> CritHitSFX;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components")
 	TObjectPtr<AEnemyAIController> EnemyAIController;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void ShowHealthBar();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void HideHealthBar();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Core Components", meta = (AllowPrivateAccess = "true"))
@@ -66,6 +76,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UParticleSystem> DeathParticles;
+
+	/* Time to display health bar when damaged */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
+	float HealthBarDisplayTime;
+	
+	FTimerHandle HealthBarTimerHandle;
 
 public:
 	FORCEINLINE TObjectPtr<UAttributeComponent> GetAttributeComp() const { return AttributeComponent; }
