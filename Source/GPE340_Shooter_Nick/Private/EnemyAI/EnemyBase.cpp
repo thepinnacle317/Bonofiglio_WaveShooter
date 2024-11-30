@@ -32,7 +32,8 @@ void AEnemyBase::Destroyed()
 
 	// Handle Spawning the pickup actor for scrap
 	//TODO: Spawn scrap pickup
-	//TODO: Increment players total kills from the game instance
+
+	// Increment the total kills for the player to be showed in the game over screen
 	UWaveShooterGameInstance* WaveGameShooterInstance = Cast<UWaveShooterGameInstance>(GetGameInstance());
 	WaveGameShooterInstance->TotalEnemiesKilled++;
 }

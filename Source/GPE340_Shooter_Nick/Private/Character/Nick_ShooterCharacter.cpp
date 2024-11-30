@@ -2,6 +2,8 @@
 
 
 #include "Character/Nick_ShooterCharacter.h"
+
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Character/AttributeComponent.h"
 #include "Character/InteractionComponent.h"
@@ -157,12 +159,15 @@ void ANick_ShooterCharacter::HandlePlayerDeath()
 	{
 		GameStateBase->CurrentGameState = EGameStates::EGS_GameOver;
 	}
+
+	OwningController->MainOverlay->RemoveFromParent();
 	
 	/* Broadcast message to listeners */
 	if (OnPlayerDeath.IsBound())
 	{
 		OnPlayerDeath.Broadcast();
-		// Execute any bound logic here		
 	}
+
+	Destroy();
 }
 

@@ -39,6 +39,10 @@ public:
 	FReloadDelegate ReloadDelegate;
 	FThrowWeaponDelegate ThrowWeaponDelegate;
 
+	/* Variable for the Main Overlay Widget */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUserWidget> MainOverlay;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -102,10 +106,6 @@ private:
 	/* Main Hud Overlay Class *** Set in blueprints */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> MainOverlayClass;
-
-	/* Variable for the Main Overlay Widget */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UUserWidget> MainOverlay;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="HUD Properties | Widgets", meta = (AllowPrivateAccess = "true"))
 	bool PauseToggled;
