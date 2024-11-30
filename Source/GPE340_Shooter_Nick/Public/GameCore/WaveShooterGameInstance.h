@@ -26,9 +26,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Wave Game Properties")
 	int32 GetWaveNumber() const { return CurrentWaveNumber; }
 
-	/* Used to track and display the total number of enemies the player has killed after they die */
+	/* Used to track and display the total number of enemies the player has killed */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Wave Game Properties")
-	int32 TotalEnemiesKilled;
+	int32 TotalEnemiesKilled = 0;
+
+	/* Used to track and display the total number of waves the player has cleared */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Wave Game Properties")
+	int32 WavesCleared = 0;
 
 	/// Game User Settings ///
 

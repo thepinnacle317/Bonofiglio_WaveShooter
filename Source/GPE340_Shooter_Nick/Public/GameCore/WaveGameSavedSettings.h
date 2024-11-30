@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "WaveShooterSaveGame.generated.h"
+#include "WaveGameSavedSettings.generated.h"
 
 /**
  * 
@@ -69,11 +69,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="User Game Settings")
 	int32 Saved_ResolutionQuality;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player Progression")
-	int32 Saved_WaveNumber;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player Progression")
-	int32 Saved_TotalKills;
 	
 };

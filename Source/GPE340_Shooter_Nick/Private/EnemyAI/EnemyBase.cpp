@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/AttributeComponent.h"
 #include "EnemyAI/EnemyAIController.h"
+#include "GameCore/WaveShooterGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -23,6 +24,17 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+}
+
+void AEnemyBase::Destroyed()
+{
+	Super::Destroyed();
+
+	// Handle Spawning the pickup actor for scrap
+	//TODO: Spawn scrap pickup
+	//TODO: Increment players total kills from the game instance
+	UWaveShooterGameInstance* WaveGameShooterInstance = Cast<UWaveShooterGameInstance>(GetGameInstance());
+	WaveGameShooterInstance->TotalEnemiesKilled++;
 }
 
 void AEnemyBase::ShowHealthBar_Implementation()

@@ -39,6 +39,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Destroyed() override;
+
 	/* Particle spawned when hit by the projectile */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "AI Properties | Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UParticleSystem> ImpactVFX;

@@ -267,6 +267,7 @@ void AEnemyWaveManager::OnEnemyDeath()
 
 void AEnemyWaveManager::OnWaveEnd()
 {
+	WaveGameInstance->WavesCleared++;
 	// Will handle the delay between wave and begin the next round.
 	StartNextWave();
 	if (WaveEnded.IsBound())
